@@ -73,6 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setupScrollProgress();
   setupHeroCarousel();
   setupAmenityShowcase();
+  setupVisitFaq();
   setupTilt();
   setupMobileMasks();
   logEvent("page_loaded", "Website opened");
@@ -90,8 +91,12 @@ function setupLeadGate(){
   const form = document.getElementById("welcomeForm");
   if(!gate || !form) return;
 
-  const saved = safeParse(sessionStorage.getItem("tcc_user_session"));
-  if(saved && saved.name && saved.mobile && saved.email){
+  const saved = safeParse(localStorage.getItem("tcc_user_session"));
+const savedAt = Number(localStorage.getItem("tcc_user_session_time") || 0);
+const fiveMinutes = 5 * 60 * 1000;
+const stillFresh = savedAt && Date.now() - savedAt < fiveMinutes;
+
+  if(saved && saved.name && saved.mobile && saved.email && stillFresh){
     state.user = saved;
     gate.classList.add("hide");
     document.body.classList.remove("no-scroll");
@@ -115,7 +120,9 @@ function setupLeadGate(){
     if(!ok){ state.validationErrors++; return; }
 
     state.user = { name, mobile, email };
-    sessionStorage.setItem("tcc_user_session", JSON.stringify(state.user));
+    localStorage.setItem("tcc_user_session", JSON.stringify(state.user));
+localStorage.setItem("tcc_user_session_time", String(Date.now()));
+sessionStorage.setItem("tcc_user_session", JSON.stringify(state.user));
     prefillModalUser();
     logEvent("entry_details_submitted", "First 3 details captured");
 
@@ -242,6 +249,8 @@ async function handleEnquirySubmit(e){
 
   state.user = { name, mobile, email };
   sessionStorage.setItem("tcc_user_session", JSON.stringify(state.user));
+  localStorage.setItem("tcc_user_session", JSON.stringify(state.user));
+  localStorage.setItem("tcc_user_session_time", String(Date.now()));
 
   const config = serviceMap[state.currentService];
   const payload = {
@@ -293,11 +302,22 @@ function showSuccess(payload){
   document.getElementById("successPanel")?.classList.add("show");
   setText("ticketDisplay", payload.ticketId);
   setText("successTitle", `Thank you, ${payload.name.split(" ")[0]}.`);
-  setText("successCopy", `Your ${payload.selectedService} request has been recorded. We also prepare a WhatsApp message for faster coordination.`);
+  setText("successCopy", `Your ${payload.selectedService} request has been received. Our team will review it and connect with you shortly. A WhatsApp message is ready if you want faster coordination.`);
 }
 
 function buildWhatsAppMessage(p){
-  return `Hello The Co Work Capital,%0A%0AMy enquiry ticket is ${p.ticketId}.%0A%0ARequirement: ${p.selectedService}%0AName: ${p.name}%0AMobile: ${p.mobile}%0AEmail: ${p.email}%0APeople/Passes: ${p.people}%0ADate: ${p.date}%0ATime: ${p.preferredTime || "Flexible"}%0AMessage: ${p.note || "Please guide me."}`;
+  return `Hello The Co Work Capital,
+
+My enquiry ticket is ${p.ticketId}.
+
+Requirement: ${p.selectedService}
+Name: ${p.name}
+Mobile: ${p.mobile}
+Email: ${p.email}
+People/Passes: ${p.people}
+Date: ${p.date}
+Time: ${p.preferredTime || "Flexible"}
+Message: ${p.note || "Please guide me."}`;
 }
 
 function setupReveal(){
@@ -397,6 +417,45 @@ function setupAmenityShowcase(){
   }, 3200);
 }
 
+
+function setupVisitFaq(){
+  const section = document.querySelector("[data-visit-faq]");
+  if(!section) return;
+
+  const cards = [...section.querySelectorAll(".visit-faq-card")];
+
+  function closeCard(card){
+    card.classList.remove("active");
+    const btn = card.querySelector(".visit-faq-q");
+    const answer = card.querySelector(".visit-faq-a");
+    if(btn) btn.setAttribute("aria-expanded", "false");
+    if(answer) answer.style.maxHeight = null;
+  }
+
+  function openCard(card){
+    card.classList.add("active");
+    const btn = card.querySelector(".visit-faq-q");
+    const answer = card.querySelector(".visit-faq-a");
+    if(btn) btn.setAttribute("aria-expanded", "true");
+    if(answer) answer.style.maxHeight = answer.scrollHeight + "px";
+  }
+
+  cards.forEach((card, index) => {
+    const button = card.querySelector(".visit-faq-q");
+    if(!button) return;
+    if(card.classList.contains("active")) openCard(card);
+
+    button.addEventListener("click", () => {
+      const isActive = card.classList.contains("active");
+      cards.forEach(closeCard);
+      if(!isActive) openCard(card);
+      logEvent("faq_clicked", button.innerText.trim());
+    });
+
+    if(index === 0) openCard(card);
+  });
+}
+
 function setupTilt(){
   if(matchMedia("(pointer: coarse)").matches) return;
   document.querySelectorAll(".tilt, .tilt-soft").forEach(card => {
@@ -437,7 +496,7 @@ async function apiCall(action, data = {}){
     });
     return true;
   }catch(err){
-    console.warn("Backend call failed", action, err);
+    console.warn("Request could not be completed", action, err);
     return false;
   }
 }

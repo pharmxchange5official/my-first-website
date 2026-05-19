@@ -31,7 +31,7 @@
         <img class="gate-logo" src="logo-coworkcapital.png" alt="The Co Work Capital logo" onerror="this.src='https://thecoworkcapital.com/wp-content/uploads/2020/02/cropped-New-Logo_BW-1.jpg'">
         <p class="mini-label">Welcome to The Capital</p>
         <h1 id="gateTitle">Tell us who is entering.</h1>
-        <p class="gate-copy">Enter your details once. Your enquiry forms will be pre-filled and our team will know how to guide you faster.</p>
+        <p class="gate-copy">Share your details once. Your enquiry forms will be pre-filled so our team can guide you faster.</p>
 
         <form id="welcomeForm" class="gate-form" novalidate>
           <label>
@@ -58,7 +58,7 @@
           <button type="submit" class="btn purple full">Enter The Website</button>
         </form>
 
-        <p class="safe-note">Used only for workspace assistance, enquiry follow-up and service communication.</p>
+        <p class="safe-note">Used only to assist your workspace visit, enquiry follow-up and service communication.</p>
       </div>
     </div>
   </section>
@@ -220,7 +220,7 @@
       <div class="process-copy reveal">
         <p class="eyebrow"><span></span> Simple booking flow</p>
         <h2>Less confusion. Faster action.</h2>
-        <p>First we capture your basic details, then every enquiry form is pre-filled. That means visitors do not repeat the same details again and again.</p>
+        <p>Share your basic details once, and every enquiry form stays pre-filled. No repeated typing, just a smoother booking experience.</p>
         <div class="process-list">
           <article><b>01</b><span>Enter name, mobile and email once.</span></article>
           <article><b>02</b><span>Pick day pass, desk, cabin, conference room, event or studio.</span></article>
@@ -287,7 +287,7 @@
           <p class="eyebrow"><span></span> Gallery</p>
           <h2>A workspace should look like progress.</h2>
         </div>
-        <p>Only cleaner, higher-quality visuals are used here so the site feels sharper and less repeated.</p>
+        <p>Explore a sharper view of the workspace atmosphere before you plan your visit.</p>
       </div>
 
       <div class="gallery-grid">
@@ -299,18 +299,74 @@
       </div>
     </section>
 
-    <section class="section faq-section" id="faq">
-      <div class="section-heading reveal">
-        <p class="eyebrow"><span></span> Quick answers</p>
-        <h2>Before you visit.</h2>
-      </div>
-      <div class="faq-list reveal">
-        <details open><summary>Can I book only for one day?</summary><p>Yes. Use the Quick Day Pass button and our team will help you confirm availability.</p></details>
-        <details><summary>Do you offer private cabins?</summary><p>Yes. Cabin options depend on team size, preferred start date and current availability.</p></details>
-        <details><summary>Can I use meeting rooms?</summary><p>Yes. Conference rooms can be requested by date, time and guest count.</p></details>
-        <details><summary>Will I receive email confirmation?</summary><p>Yes. The backend records your details and sends welcome and enquiry emails when enabled in Apps Script settings.</p></details>
+    <section class="section visit-faq-section reveal" id="faq" data-visit-faq>
+      <div class="visit-faq-wrap">
+        <div class="visit-faq-intro">
+          <span class="visit-eyebrow">Before you visit</span>
+          <h2>Everything you need to know before stepping in.</h2>
+          <p>
+            Choose a flexible day pass, explore private workspaces, or ask for meeting room availability.
+            Our team will guide you toward the right option before your visit.
+          </p>
+          <div class="visit-faq-actions">
+            <button class="visit-faq-btn primary" type="button" data-open-form="daypass">Quick Day Pass</button>
+            <a class="visit-faq-btn soft" href="#contact">Talk to our team</a>
+          </div>
+        </div>
+
+        <div class="visit-faq-list">
+          <div class="visit-faq-card active">
+            <button class="visit-faq-q" type="button" aria-expanded="true">
+              <span>Can I book only for one day?</span>
+              <span class="visit-faq-icon">+</span>
+            </button>
+            <div class="visit-faq-a">
+              <div class="visit-faq-a-inner">
+                Yes. Choose the <strong>Quick Day Pass</strong> if you want to work for one day, test the atmosphere, or use a professional workspace while you are in Vadodara.
+              </div>
+            </div>
+          </div>
+
+          <div class="visit-faq-card">
+            <button class="visit-faq-q" type="button" aria-expanded="false">
+              <span>Do you offer private cabins?</span>
+              <span class="visit-faq-icon">+</span>
+            </button>
+            <div class="visit-faq-a">
+              <div class="visit-faq-a-inner">
+                Yes. Private cabins are available for founders, small teams, consultants and businesses who need privacy, focus and a polished business presence.
+              </div>
+            </div>
+          </div>
+
+          <div class="visit-faq-card">
+            <button class="visit-faq-q" type="button" aria-expanded="false">
+              <span>Can I use meeting rooms?</span>
+              <span class="visit-faq-icon">+</span>
+            </button>
+            <div class="visit-faq-a">
+              <div class="visit-faq-a-inner">
+                Yes. You can request meeting rooms for client discussions, interviews, team reviews, presentations and focused business conversations.
+              </div>
+            </div>
+          </div>
+
+          <div class="visit-faq-card">
+            <button class="visit-faq-q" type="button" aria-expanded="false">
+              <span>Can your team help me choose the right space?</span>
+              <span class="visit-faq-icon">+</span>
+            </button>
+            <div class="visit-faq-a">
+              <div class="visit-faq-a-inner">
+                Yes. Share your requirement once, and our team will guide you toward the best fit — day pass, desk, cabin, meeting room, event space or studio.
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
+
+<!-- BEFORE YOU VISIT / FAQ SECTION END -->
 
     <section class="section contact-section" id="contact">
       <div class="contact-panel reveal">
