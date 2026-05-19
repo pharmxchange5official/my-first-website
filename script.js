@@ -1,11 +1,12 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbz4xmPNpOaoq5FpnqdWHd-mYcbFQMgbHpBwcbag1ND7taSEE-fiJ-99Lo-gFNZLvWBFCw/exec";
 const WHATSAPP_NUMBER = "918320765392";
+const SITE_URL = "https://thecoworkcapital.netlify.app/";
 
 const galleryImages = [
   {
     src: "https://thecoworkcapital.com/wp-content/uploads/elementor/thumbs/SRP_0396-scaled-q2yoopflhhy0z8n5wbxf6gbzts0h6883nvw3djsh0g.jpg",
     kicker: "Workspace Operating System",
-    title: "Cabins, desks, meeting rooms and studio energy.",
+    title: "Cabins, desks, meetings and creative energy.",
     copy: "A complete professional atmosphere for serious work, sharp meetings and flexible growth."
   },
   {
@@ -39,35 +40,34 @@ const amenities = [
   ["02", "Tournaments & Screenings", "Cricket championships, inside cowork tournaments and match screenings on demand."],
   ["03", "Private Calling Zones", "Phone booths and quiet corners for private calls, sales conversations and client work."],
   ["04", "Unlimited Tea & Coffee", "Cafeteria support with unlimited tea and coffee for daily working comfort."],
-  ["05", "16000 Sq. Ft. Empire", "Large flexible office capacity in Ocean Building, Sarabhai Campus, Vadodara."]
+  ["05", "16000 Sq. Ft. Empire", "Large flexible office capacity in Ocean Building, Sarabhai Campus, Vadodara."],
+  ["06", "Games That Network", "Pool, table tennis, carrom and chess create natural moments for founders to connect."],
+  ["07", "Flexible Work Rhythm", "Day and night service, multiple cabin sizes and seat options for different work patterns."]
 ];
 
 const serviceMap = {
-  "daypass": {
+  daypass: {
     title: "Book Quick Day Pass",
-    mini: "Fast access",
+    mini: "Fast desk access",
     intro: "Reserve a desk for the day. Visit reception, confirm availability and start working.",
     selectedService: "Hot Desks / Quick Day Pass",
     serviceType: "daypass",
-    peopleLabel: "Passes",
     submit: "Submit Day Pass Request"
   },
-  "tour": {
+  tour: {
     title: "Book a Workspace Tour",
     mini: "Visit request",
     intro: "Share your preferred date and the team will help you experience the space.",
     selectedService: "Workspace Tour",
     serviceType: "standard",
-    peopleLabel: "People",
     submit: "Submit Tour Request"
   },
-  "dedicated": {
+  dedicated: {
     title: "Dedicated Desk Availability",
     mini: "Monthly workspace",
     intro: "Check availability for a fixed desk in a premium coworking environment.",
     selectedService: "Dedicated Desks",
     serviceType: "standard",
-    peopleLabel: "Seats",
     submit: "Check Availability"
   },
   "private-cabin": {
@@ -76,44 +76,45 @@ const serviceMap = {
     intro: "Tell us your team size and preferred start date for private cabin options.",
     selectedService: "Private Cabin",
     serviceType: "standard",
-    peopleLabel: "Seats",
     submit: "Request Cabin Options"
   },
-  "conference": {
+  conference: {
     title: "Conference Room Request",
     mini: "Meeting room",
     intro: "Share your date, time and guest count. Team will confirm availability.",
     selectedService: "Conference Room",
     serviceType: "conference",
-    peopleLabel: "Guests",
     submit: "Submit Conference Request"
   },
-  "event": {
+  event: {
     title: "Event Space Request",
     mini: "Workshops & sessions",
     intro: "Plan a workshop, seminar or inside business event.",
     selectedService: "Event Space",
     serviceType: "event",
-    peopleLabel: "Guests",
     submit: "Submit Event Request"
   },
-  "studio": {
+  studio: {
     title: "Studio Space Request",
     mini: "Creative booking",
     intro: "Tell us about your shoot, podcast, interview or content requirement.",
     selectedService: "Studio Space",
     serviceType: "event",
-    peopleLabel: "People",
     submit: "Submit Studio Request"
   }
 };
 
 const state = {
-  sessionId: "S-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8),
+  sessionId: "S-" + Date.now() + "-" + Math.random().toString(36).slice(2, 9),
   user: { name: "", mobile: "", email: "" },
   currentService: "tour",
   lastTicket: "",
-  lastWhatsAppMessage: ""
+  lastWhatsAppMessage: "",
+  startedAt: Date.now(),
+  formStarted: false,
+  converted: false,
+  validationErrors: 0,
+  eventStream: []
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -128,6 +129,11 @@ document.addEventListener("DOMContentLoaded", () => {
   setupAmenityShowcase();
   setupTilt();
   setupMobileMasks();
+  logEvent("page_loaded", "Website opened");
+});
+
+window.addEventListener("beforeunload", () => {
+  logSession("page_exit");
 });
 
 function setupYear(){
@@ -138,42 +144,45 @@ function setupYear(){
 function setupLeadGate(){
   const gate = document.getElementById("leadGate");
   const form = document.getElementById("welcomeForm");
+  if(!gate || !form) return;
 
-  const saved = JSON.parse(sessionStorage.getItem("tcc_user_session") || "null");
+  const saved = safeParse(sessionStorage.getItem("tcc_user_session"));
   if(saved && saved.name && saved.mobile && saved.email){
     state.user = saved;
     gate.classList.add("hide");
+    document.body.classList.remove("no-scroll");
     prefillModalUser();
   } else {
     document.body.classList.add("no-scroll");
+    setTimeout(() => document.getElementById("welcomeName")?.focus(), 500);
   }
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-
     const name = cleanName(document.getElementById("welcomeName").value);
     const mobile = onlyDigits(document.getElementById("welcomeMobile").value);
     const email = cleanEmail(document.getElementById("welcomeEmail").value);
 
     clearErrors(form);
-
     let ok = true;
     if(name.length < 2){ setError("welcomeName", "Please enter your full name."); ok = false; }
     if(!isValidIndianMobile(mobile)){ setError("welcomeMobile", "Enter a valid 10 digit Indian mobile number."); ok = false; }
     if(!isValidEmail(email)){ setError("welcomeEmail", "Enter a valid email address."); ok = false; }
-    if(!ok) return;
+    if(!ok){ state.validationErrors++; return; }
 
     state.user = { name, mobile, email };
     sessionStorage.setItem("tcc_user_session", JSON.stringify(state.user));
     prefillModalUser();
+    logEvent("entry_details_submitted", "First 3 details captured");
 
     await apiCall("logEarlyLead", {
       sessionId: state.sessionId,
       name,
-      mobile,
+      mobile: "+91" + mobile,
       email,
-      sourcePath: "premium_website_entry_gate",
-      userAgent: navigator.userAgent
+      sourcePath: SITE_URL + "#entry-gate",
+      userAgent: navigator.userAgent,
+      screenSize: `${window.innerWidth}x${window.innerHeight}`
     });
 
     gate.classList.add("hide");
@@ -188,23 +197,24 @@ function setupButtons(){
 }
 
 function setupModal(){
-  const modal = document.getElementById("formModal");
   const form = document.getElementById("enquiryForm");
   const gst = document.getElementById("hasGst");
   const whatsAppBtn = document.getElementById("whatsAppBtn");
+  if(!form) return;
 
   document.querySelectorAll("[data-close-modal]").forEach(el => el.addEventListener("click", closeEnquiry));
   document.addEventListener("keydown", (e) => { if(e.key === "Escape") closeEnquiry(); });
 
-  gst.addEventListener("change", () => {
-    document.getElementById("gstFields").classList.toggle("show", gst.checked);
+  gst?.addEventListener("change", () => {
+    document.getElementById("gstFields")?.classList.toggle("show", gst.checked);
   });
 
   form.addEventListener("submit", handleEnquirySubmit);
 
-  whatsAppBtn.addEventListener("click", () => {
+  whatsAppBtn?.addEventListener("click", () => {
     if(state.lastWhatsAppMessage){
       window.open("https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(state.lastWhatsAppMessage), "_blank");
+      logEvent("whatsapp_opened", state.lastTicket || "");
     }
   });
 }
@@ -212,48 +222,47 @@ function setupModal(){
 function openEnquiry(type = "tour"){
   state.currentService = serviceMap[type] ? type : "tour";
   const config = serviceMap[state.currentService];
+  state.formStarted = true;
 
-  document.getElementById("modalMini").textContent = config.mini;
-  document.getElementById("modalTitle").textContent = config.title;
-  document.getElementById("modalIntro").textContent = config.intro;
-  document.getElementById("serviceType").value = config.serviceType;
-  document.getElementById("selectedService").value = config.selectedService;
-  document.querySelector(".submit-btn").textContent = config.submit;
-  document.querySelector('label[for="formPeople"]');
+  setText("modalMini", config.mini);
+  setText("modalTitle", config.title);
+  setText("modalIntro", config.intro);
+  setVal("serviceType", config.serviceType);
+  setVal("selectedService", config.selectedService);
+  const submit = document.querySelector(".submit-btn");
+  if(submit) submit.textContent = config.submit;
 
-  document.getElementById("ticketId").value = generateTicketId(config.serviceType);
-  document.getElementById("successPanel").classList.remove("show");
-  document.getElementById("enquiryForm").style.display = "grid";
-  document.getElementById("formModal").classList.add("show");
-  document.getElementById("formModal").setAttribute("aria-hidden", "false");
-  document.body.classList.add("no-scroll");
+  const ticket = generateTicketId(config.serviceType);
+  setVal("ticketId", ticket);
+  state.lastTicket = ticket;
 
   prefillModalUser();
+  clearErrors(document.getElementById("enquiryForm"));
+  document.getElementById("successPanel")?.classList.remove("show");
+  document.getElementById("enquiryForm")?.classList.remove("hide");
 
-  const today = new Date();
-  today.setDate(today.getDate() + 1);
-  document.getElementById("formDate").min = today.toISOString().split("T")[0];
-  document.getElementById("formNote").placeholder = state.currentService === "daypass"
-    ? "Example: I want to visit tomorrow and work for the day."
-    : "Tell us about your requirement.";
+  document.getElementById("formModal")?.classList.add("show");
+  document.getElementById("formModal")?.setAttribute("aria-hidden", "false");
+  document.body.classList.add("no-scroll");
+
+  apiCall("logIntent", {
+    sessionId: state.sessionId,
+    intent: config.selectedService,
+    sourcePath: SITE_URL + "#" + type
+  });
+  logEvent("form_opened", config.selectedService);
 }
 
 function closeEnquiry(){
-  document.getElementById("formModal").classList.remove("show");
-  document.getElementById("formModal").setAttribute("aria-hidden", "true");
+  document.getElementById("formModal")?.classList.remove("show");
+  document.getElementById("formModal")?.setAttribute("aria-hidden", "true");
   document.body.classList.remove("no-scroll");
 }
 
 function prefillModalUser(){
-  const map = [
-    ["formName", state.user.name],
-    ["formMobile", state.user.mobile],
-    ["formEmail", state.user.email]
-  ];
-  map.forEach(([id, val]) => {
-    const el = document.getElementById(id);
-    if(el && val) el.value = val;
-  });
+  setVal("formName", state.user.name || "");
+  setVal("formMobile", state.user.mobile || "");
+  setVal("formEmail", state.user.email || "");
 }
 
 async function handleEnquirySubmit(e){
@@ -262,212 +271,280 @@ async function handleEnquirySubmit(e){
   clearErrors(form);
 
   const data = Object.fromEntries(new FormData(form).entries());
-  data.name = cleanName(data.name);
-  data.mobile = onlyDigits(data.mobile);
-  data.email = cleanEmail(data.email);
-  data.ticketId = document.getElementById("ticketId").value || generateTicketId(data.serviceType);
-  data.sessionId = state.sessionId;
-  data.sourcePath = "premium_frontend";
-  data.userAgent = navigator.userAgent;
-  data.referrer = document.referrer || "";
-  data.hasGst = document.getElementById("hasGst").checked ? "Yes" : "No";
-  data.gstNumber = cleanText(document.getElementById("gstNumber").value).toUpperCase();
-  data.gstFirm = cleanText(document.getElementById("gstFirm").value);
+  const name = cleanName(data.name || "");
+  const mobile = onlyDigits(data.mobile || "");
+  const email = cleanEmail(data.email || "");
+  const date = data.date || "";
+  const people = Math.max(Number(data.people || 1), 1);
+  const serviceType = data.serviceType || "standard";
+  const selectedService = data.selectedService || "Workspace Enquiry";
+  const ticketId = data.ticketId || generateTicketId(serviceType);
+  const hasGst = document.getElementById("hasGst")?.checked ? "Yes" : "No";
+  const gstNumber = cleanText(document.getElementById("gstNumber")?.value || "").toUpperCase();
 
   let ok = true;
-  if(data.name.length < 2){ setError("formName", "Please enter full name."); ok = false; }
-  if(!isValidIndianMobile(data.mobile)){ setError("formMobile", "Enter a valid 10 digit mobile number."); ok = false; }
-  if(!isValidEmail(data.email)){ setError("formEmail", "Enter a valid email address."); ok = false; }
-  if(!data.date){ setError("formDate", "Please select preferred date."); ok = false; }
-  if(!ok) return;
+  if(name.length < 2){ setError("formName", "Please enter your full name."); ok = false; }
+  if(!isValidIndianMobile(mobile)){ setError("formMobile", "Enter a valid 10 digit Indian mobile number."); ok = false; }
+  if(!isValidEmail(email)){ setError("formEmail", "Enter a valid email address."); ok = false; }
+  if(!date){ setError("formDate", "Please select your preferred date."); ok = false; }
+  if(hasGst === "Yes" && gstNumber && !isValidGstin(gstNumber)){ alert("GSTIN format looks incorrect. Please check or leave GST blank for now."); ok = false; }
+  if(!ok){ state.validationErrors++; return; }
 
-  state.user = { name: data.name, mobile: data.mobile, email: data.email };
+  state.user = { name, mobile, email };
   sessionStorage.setItem("tcc_user_session", JSON.stringify(state.user));
+  state.lastTicket = ticketId;
 
-  const action = data.serviceType === "conference" ? "submitConference" : "submitInquiry";
+  const payload = {
+    ticketId,
+    sessionId: state.sessionId,
+    name,
+    mobile: "+91" + mobile,
+    email,
+    company: cleanText(data.company || ""),
+    selectedService,
+    serviceType,
+    people,
+    date,
+    preferredDate: date,
+    preferredTime: cleanText(data.preferredTime || ""),
+    note: cleanText(data.note || ""),
+    hasGst,
+    gstNumber,
+    gstFirm: cleanText(document.getElementById("gstFirm")?.value || ""),
+    sourcePath: SITE_URL + "#enquiry-form",
+    userAgent: navigator.userAgent,
+    referrer: document.referrer || "direct",
+    screenSize: `${window.innerWidth}x${window.innerHeight}`
+  };
+
   const submitBtn = form.querySelector(".submit-btn");
-  const original = submitBtn.textContent;
+  const oldText = submitBtn.textContent;
   submitBtn.disabled = true;
-  submitBtn.textContent = "Sending to team...";
+  submitBtn.textContent = "Submitting safely...";
 
-  await apiCall(action, data);
+  const action = serviceType === "conference" ? "submitConference" : "submitInquiry";
+  await apiCall(action, payload);
+  await apiCall("logSession", buildSessionPayload("form_submit_success", true, payload));
 
-  state.lastTicket = data.ticketId;
-  state.lastWhatsAppMessage = createWhatsAppMessage(data);
-
-  form.style.display = "none";
-  document.getElementById("ticketDisplay").textContent = data.ticketId;
-  document.getElementById("successTitle").textContent = data.serviceType === "daypass"
-    ? "Your Day Pass request is created."
-    : "Your enquiry is created.";
-  document.getElementById("successCopy").textContent = "We have shared your enquiry with The Co•Work Capital team. You can also open WhatsApp with a ready message.";
-  document.getElementById("successPanel").classList.add("show");
-
+  state.converted = true;
+  state.lastWhatsAppMessage = buildWhatsAppMessage(payload);
+  form.classList.add("hide");
+  setText("ticketDisplay", ticketId);
+  setText("successTitle", selectedService + " request created.");
+  setText("successCopy", "Your request has been captured. Our team will review it and connect with you shortly. You can also open a ready WhatsApp message now.");
+  document.getElementById("successPanel")?.classList.add("show");
   submitBtn.disabled = false;
-  submitBtn.textContent = original;
+  submitBtn.textContent = oldText;
+  logEvent("enquiry_submitted", selectedService);
 }
 
-function createWhatsAppMessage(data){
+function buildWhatsAppMessage(d){
   return [
     "Hello The Co•Work Capital team,",
     "",
-    "I have submitted a workspace enquiry from the website.",
-    "",
-    "Ticket ID: " + data.ticketId,
-    "Requirement: " + data.selectedService,
-    "Name: " + data.name,
-    "Mobile: +91 " + data.mobile,
-    "Email: " + data.email,
-    data.company ? "Company: " + data.company : "",
-    "People/Passes: " + (data.people || "1"),
-    "Preferred Date: " + data.date,
-    data.preferredTime ? "Preferred Time: " + data.preferredTime : "",
-    data.note ? "Message: " + data.note : "",
+    "I have submitted a workspace enquiry from your website.",
+    "Ticket ID: " + d.ticketId,
+    "Requirement: " + d.selectedService,
+    "Name: " + d.name,
+    "Mobile: " + d.mobile,
+    "Email: " + d.email,
+    "People/Passes: " + d.people,
+    "Preferred Date: " + d.date,
+    d.preferredTime ? "Preferred Time: " + d.preferredTime : "",
+    d.note ? "Message: " + d.note : "",
     "",
     "Please guide me with availability and next steps."
   ].filter(Boolean).join("\n");
 }
 
-async function apiCall(action, data){
+async function apiCall(action, data = {}){
   if(!API_URL) return false;
   try{
     await fetch(API_URL, {
       method: "POST",
       mode: "no-cors",
+      keepalive: true,
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ action, data })
+      body: JSON.stringify({ action, data, payload: data, source: "tcc-netlify-white-v3" })
     });
     return true;
   }catch(err){
-    console.warn("Backend call failed", err);
+    console.warn("Backend request failed:", action, err);
     return false;
   }
 }
 
-function setupHeroCarousel(){
-  const frame = document.querySelector(".device-frame");
-  const img = document.getElementById("heroCarouselImage");
-  const kicker = document.getElementById("heroCarouselKicker");
-  const title = document.getElementById("heroCarouselTitle");
-  const copy = document.getElementById("heroCarouselCopy");
-  let index = 0;
-
-  setInterval(() => {
-    index = (index + 1) % galleryImages.length;
-    const item = galleryImages[index];
-    frame.classList.add("switching");
-    setTimeout(() => {
-      img.src = item.src;
-      kicker.textContent = item.kicker;
-      title.textContent = item.title;
-      copy.textContent = item.copy;
-      frame.classList.remove("switching");
-    }, 260);
-  }, 3600);
-}
-
-function setupAmenityShowcase(){
-  const no = document.getElementById("amenityNumber");
-  const title = document.getElementById("amenityTitle");
-  const copy = document.getElementById("amenityCopy");
-  let index = 0;
-  setInterval(() => {
-    index = (index + 1) % amenities.length;
-    const item = amenities[index];
-    no.textContent = item[0];
-    title.textContent = item[1];
-    copy.textContent = item[2];
-  }, 3100);
-}
-
 function setupReveal(){
-  const els = document.querySelectorAll(".reveal");
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
+  const items = document.querySelectorAll(".reveal");
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
       if(entry.isIntersecting){
-        entry.target.classList.add("in");
-        obs.unobserve(entry.target);
+        entry.target.classList.add("visible");
+        observer.unobserve(entry.target);
       }
     });
-  }, { threshold:.12, rootMargin:"0px 0px -40px 0px" });
-  els.forEach((el, i) => {
-    el.style.transitionDelay = Math.min(i * 35, 240) + "ms";
-    obs.observe(el);
-  });
+  }, { threshold: .14, rootMargin: "0px 0px -60px 0px" });
+  items.forEach(el => observer.observe(el));
 }
 
 function setupCursor(){
   const orb = document.getElementById("cursorOrb");
-  if(!orb || window.matchMedia("(max-width: 700px)").matches) return;
+  if(!orb || window.matchMedia("(max-width: 800px)").matches) return;
   let x = 0, y = 0, tx = 0, ty = 0;
-  document.addEventListener("mousemove", e => { tx = e.clientX; ty = e.clientY; }, { passive:true });
-  function loop(){
-    x += (tx - x) * 0.12;
-    y += (ty - y) * 0.12;
-    orb.style.transform = `translate(${x - 180}px, ${y - 180}px)`;
-    requestAnimationFrame(loop);
+  window.addEventListener("mousemove", (e) => { tx = e.clientX; ty = e.clientY; }, { passive:true });
+  function raf(){
+    x += (tx - x) * .12;
+    y += (ty - y) * .12;
+    orb.style.left = x + "px";
+    orb.style.top = y + "px";
+    requestAnimationFrame(raf);
   }
-  loop();
+  raf();
 }
 
 function setupScrollProgress(){
   const line = document.getElementById("progressLine");
+  if(!line) return;
   let ticking = false;
   window.addEventListener("scroll", () => {
-    if(ticking) return;
-    ticking = true;
-    requestAnimationFrame(() => {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      const p = max > 0 ? (window.scrollY / max) * 100 : 0;
-      line.style.width = p + "%";
-      ticking = false;
-    });
+    if(!ticking){
+      requestAnimationFrame(() => {
+        const h = document.documentElement.scrollHeight - window.innerHeight;
+        const p = h > 0 ? (window.scrollY / h) * 100 : 0;
+        line.style.width = p + "%";
+        ticking = false;
+      });
+      ticking = true;
+    }
   }, { passive:true });
+}
+
+function setupHeroCarousel(){
+  const img = document.getElementById("heroCarouselImage");
+  if(!img) return;
+  let i = 0;
+  setInterval(() => {
+    i = (i + 1) % galleryImages.length;
+    const g = galleryImages[i];
+    img.style.opacity = "0";
+    setTimeout(() => {
+      img.src = g.src;
+      setText("heroCarouselKicker", g.kicker);
+      setText("heroCarouselTitle", g.title);
+      setText("heroCarouselCopy", g.copy);
+      img.style.opacity = "1";
+    }, 260);
+  }, 4200);
+}
+
+function setupAmenityShowcase(){
+  let i = 0;
+  setInterval(() => {
+    i = (i + 1) % amenities.length;
+    const [num, title, copy] = amenities[i];
+    const box = document.querySelector(".amenity-spotlight");
+    if(!box) return;
+    box.style.transform = "translateY(10px)";
+    box.style.opacity = ".65";
+    setTimeout(() => {
+      setText("amenityNumber", num);
+      setText("amenityTitle", title);
+      setText("amenityCopy", copy);
+      box.style.transform = "";
+      box.style.opacity = "";
+    }, 180);
+  }, 3200);
 }
 
 function setupTilt(){
   if(window.matchMedia("(max-width: 900px)").matches) return;
   document.querySelectorAll(".tilt").forEach(card => {
-    card.addEventListener("mousemove", e => {
+    card.addEventListener("mousemove", (e) => {
       const r = card.getBoundingClientRect();
       const x = e.clientX - r.left;
       const y = e.clientY - r.top;
-      const rx = ((y / r.height) - .5) * -6;
-      const ry = ((x / r.width) - .5) * 6;
+      const rx = ((y / r.height) - .5) * -7;
+      const ry = ((x / r.width) - .5) * 7;
       card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-5px)`;
     });
-    card.addEventListener("mouseleave", () => {
-      card.style.transform = "";
-    });
+    card.addEventListener("mouseleave", () => { card.style.transform = ""; });
   });
 }
 
 function setupMobileMasks(){
-  ["welcomeMobile","formMobile"].forEach(id => {
-    const el = document.getElementById(id);
-    if(!el) return;
-    el.addEventListener("input", () => { el.value = onlyDigits(el.value).slice(0,10); });
+  ["welcomeMobile", "formMobile"].forEach(id => {
+    const input = document.getElementById(id);
+    if(!input) return;
+    input.addEventListener("input", () => {
+      input.value = onlyDigits(input.value).slice(0, 10);
+    });
   });
+  const gst = document.getElementById("gstNumber");
+  gst?.addEventListener("input", () => { gst.value = gst.value.toUpperCase().replace(/[^0-9A-Z]/g, "").slice(0,15); });
 }
 
-function cleanName(v){ return cleanText(v).replace(/\s+/g, " ").trim(); }
-function cleanText(v){ return String(v || "").replace(/[<>]/g, "").trim(); }
+function logEvent(name, value = ""){
+  state.eventStream.push({ t: Math.round((Date.now() - state.startedAt) / 1000), name, value });
+  if(state.eventStream.length > 40) state.eventStream.shift();
+}
+
+function logSession(reason = "heartbeat"){
+  apiCall("logSession", buildSessionPayload(reason, state.converted));
+}
+
+function buildSessionPayload(reason, converted = false, extra = {}){
+  return {
+    sessionId: state.sessionId,
+    ticketId: state.lastTicket,
+    firstSeen: new Date(state.startedAt).toISOString(),
+    lastSeen: new Date().toISOString(),
+    totalDurationSeconds: Math.round((Date.now() - state.startedAt) / 1000),
+    deviceType: window.innerWidth < 700 ? "mobile" : window.innerWidth < 1020 ? "tablet" : "desktop",
+    browser: navigator.userAgent,
+    screenSize: `${window.innerWidth}x${window.innerHeight}`,
+    referrer: document.referrer || "direct",
+    userAgent: navigator.userAgent,
+    formStarted: state.formStarted,
+    converted,
+    completionStatus: converted ? "Converted" : "Not Converted",
+    lastStep: reason,
+    sourcePath: SITE_URL,
+    validationErrorCount: state.validationErrors,
+    eventStream: JSON.stringify(state.eventStream),
+    serviceSelected: extra.selectedService || "",
+    serviceType: extra.serviceType || ""
+  };
+}
+
+function generateTicketId(type){
+  const prefix = type === "conference" ? "CONF" : type === "daypass" ? "DAY" : type === "event" ? "EVT" : "INQ";
+  const date = new Date();
+  const stamp = String(date.getFullYear()).slice(2) + String(date.getMonth()+1).padStart(2,"0") + String(date.getDate()).padStart(2,"0");
+  const rand = Math.random().toString(36).slice(2,5).toUpperCase();
+  return `TCC-${prefix}-${stamp}-${rand}`;
+}
+
+function cleanName(v){ return cleanText(v).replace(/[^a-zA-Z .'-]/g, "").trim(); }
 function cleanEmail(v){ return String(v || "").trim().toLowerCase(); }
+function cleanText(v){ return String(v || "").replace(/[<>]/g, "").trim(); }
 function onlyDigits(v){ return String(v || "").replace(/\D/g, ""); }
 function isValidIndianMobile(v){ return /^[6-9]\d{9}$/.test(v); }
 function isValidEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); }
-
-function setError(id,msg){
-  const input = document.getElementById(id);
-  if(!input) return;
-  const label = input.closest("label") || input.closest(".phone-field")?.closest("label");
-  const small = label ? label.querySelector(".field-error") : null;
-  if(small) small.textContent = msg;
+function isValidGstin(v){ return /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(v); }
+function safeParse(v){ try { return JSON.parse(v); } catch(e){ return null; } }
+function setVal(id, value){ const el = document.getElementById(id); if(el) el.value = value; }
+function setText(id, value){ const el = document.getElementById(id); if(el) el.textContent = value; }
+function clearErrors(scope){
+  if(!scope) return;
+  scope.querySelectorAll(".field-error").forEach(el => el.textContent = "");
+  scope.querySelectorAll(".has-error").forEach(el => el.classList.remove("has-error"));
 }
-function clearErrors(form){
-  form.querySelectorAll(".field-error").forEach(s => s.textContent = "");
-}
-function generateTicketId(type){
-  const prefix = type === "conference" ? "CONF" : type === "daypass" ? "DAY" : "INQ";
-  return "TCC-" + prefix + "-" + Math.floor(1000 + Math.random() * 9000);
+function setError(inputId, message){
+  const input = document.getElementById(inputId);
+  const wrap = input?.closest("label");
+  if(wrap){
+    wrap.classList.add("has-error");
+    const small = wrap.querySelector(".field-error");
+    if(small) small.textContent = message;
+  }
 }
