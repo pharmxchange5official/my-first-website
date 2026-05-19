@@ -502,3 +502,49 @@ function setError(id, message){
   if(small) small.textContent = message;
 }
 function safeParse(v){ try{return JSON.parse(v)}catch{return null} }
+
+
+/* ===== Premium V5 behaviour upgrades ===== */
+document.addEventListener("DOMContentLoaded", () => {
+  setupPremiumPointerField();
+  setupNavigationMotion();
+  setupSolutionCardMotion();
+});
+
+function setupPremiumPointerField(){
+  if(matchMedia("(pointer: coarse)").matches) return;
+  let ticking = false;
+  window.addEventListener("pointermove", (e) => {
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      document.documentElement.style.setProperty("--cursor-x", e.clientX + "px");
+      document.documentElement.style.setProperty("--cursor-y", e.clientY + "px");
+      ticking = false;
+    });
+  }, { passive:true });
+}
+
+function setupNavigationMotion(){
+  const clickable = document.querySelectorAll('a[href^="#"], [data-open-form], .nav-pill a, .btn');
+  clickable.forEach(el => {
+    el.addEventListener("click", () => {
+      document.body.classList.add("is-clicking");
+      setTimeout(() => document.body.classList.remove("is-clicking"), 560);
+    });
+  });
+}
+
+function setupSolutionCardMotion(){
+  document.querySelectorAll(".solution-card").forEach(card => {
+    card.addEventListener("pointermove", (e) => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty("--card-x", (e.clientX - r.left) + "px");
+      card.style.setProperty("--card-y", (e.clientY - r.top) + "px");
+    }, { passive:true });
+    card.addEventListener("mouseenter", () => card.classList.add("peek"));
+    card.addEventListener("mouseleave", () => card.classList.remove("peek"));
+    card.addEventListener("focus", () => card.classList.add("peek"));
+    card.addEventListener("blur", () => card.classList.remove("peek"));
+  });
+}
