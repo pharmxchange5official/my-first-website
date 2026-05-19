@@ -3,93 +3,117 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Co Work Capital | Premium Coworking in Vadodara</title>
-  <meta name="description" content="Premium coworking spaces, private cabins, hot desks, conference rooms, studio and event space in Vadodara." />
-
+  <title>The Co•Work Capital | Premium Coworking Space Vadodara</title>
+  <meta name="description" content="Premium coworking space in Vadodara with day pass, hot desks, dedicated desks, private cabins, conference rooms, studio space, event space and business-ready amenities." />
+  <meta name="theme-color" content="#08010f" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <script src="script.js" defer></script>
 </head>
 
 <body>
-  <div class="preloader" id="preloader">
-    <div class="preloader-card">
-      <img src="https://thecoworkcapital.com/wp-content/uploads/2020/02/cropped-New-Logo_BW-1.jpg" alt="The Co Work Capital logo">
-      <p>Preparing your workspace experience</p>
+  <div class="progress-line" id="progressLine"></div>
+  <div class="cursor-orb" id="cursorOrb" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- First-visit lead gate -->
+  <section class="lead-gate" id="leadGate" aria-modal="true" role="dialog">
+    <div class="gate-bg-pulse"></div>
+    <div class="gate-card">
+      <div class="gate-logo-wrap">
+        <img src="https://thecoworkcapital.com/wp-content/uploads/2020/02/cropped-New-Logo_BW-1.jpg" alt="The Co Work Capital Logo">
+      </div>
+      <p class="mini-label">Before the experience begins</p>
+      <h1>Let us personalize your workspace visit.</h1>
+      <p class="gate-copy">Share your details once. We will keep your workspace journey clean, quick and professionally guided.</p>
+
+      <form id="welcomeForm" class="gate-form" novalidate>
+        <label>
+          <span>Full name</span>
+          <input id="welcomeName" name="name" type="text" autocomplete="name" placeholder="Your full name" minlength="2" required>
+          <small class="field-error"></small>
+        </label>
+
+        <label>
+          <span>Mobile number</span>
+          <div class="phone-field">
+            <b>+91</b>
+            <input id="welcomeMobile" name="mobile" type="tel" inputmode="numeric" maxlength="10" autocomplete="tel" placeholder="10 digit mobile" required>
+          </div>
+          <small class="field-error"></small>
+        </label>
+
+        <label>
+          <span>Email address</span>
+          <input id="welcomeEmail" name="email" type="email" autocomplete="email" placeholder="you@company.com" required>
+          <small class="field-error"></small>
+        </label>
+
+        <button type="submit" class="btn primary full">Enter The Capital</button>
+      </form>
+
+      <p class="safe-note">No spam. Your details are used only for workspace assistance and enquiry follow-up.</p>
     </div>
-  </div>
+  </section>
 
-  <div class="background-scene" aria-hidden="true">
-    <span class="orb orb-a"></span>
-    <span class="orb orb-b"></span>
-    <span class="orb orb-c"></span>
-  </div>
-
-  <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
-  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
-
-  <nav class="nav-shell">
-    <a class="brand" href="#top" aria-label="The Co Work Capital home">
-      <img src="https://thecoworkcapital.com/wp-content/uploads/2020/02/cropped-New-Logo_BW-1.jpg" alt="The Co Work Capital logo">
-      <span>
-        <strong>The Co•Work Capital</strong>
-        <small>Connect • Collaborate • Create</small>
-      </span>
+  <header class="site-header">
+    <a href="#top" class="corner-logo" aria-label="The Co Work Capital Home">
+      <img src="https://thecoworkcapital.com/wp-content/uploads/2020/02/cropped-New-Logo_BW-1.jpg" alt="The Co Work Capital">
     </a>
 
-    <div class="nav-links">
+    <nav class="nav-pill">
       <a href="#spaces">Spaces</a>
       <a href="#experience">Experience</a>
-      <a href="#plans">Plans</a>
+      <a href="#amenities">Amenities</a>
       <a href="#gallery">Gallery</a>
-      <a href="#contact">Visit</a>
-    </div>
+      <a href="#contact">Contact</a>
+    </nav>
 
-    <button class="btn btn-soft nav-button" type="button" data-open-modal="Book a Workspace Tour">Book Tour</button>
-  </nav>
+    <button class="btn nav-day-pass" data-open-form="daypass">Book Quick Day Pass</button>
+  </header>
 
   <main id="top">
     <section class="hero section">
-      <div class="hero-grid">
-        <div class="hero-copy motion-block">
-          <p class="eyebrow"><span></span> Premium coworking address in Vadodara</p>
-          <h1>Work from a space that makes your brand feel <em>bigger.</em></h1>
-          <p class="hero-text">
-            A polished work address for founders, consultants, creators, teams and businesses who want the feel of a premium office without the burden of building one.
-          </p>
+      <div class="hero-copy reveal">
+        <p class="eyebrow"><span></span> Vadodara’s premium coworking address</p>
+        <h1>Work from a place that makes your business feel bigger.</h1>
+        <p class="hero-text">
+          The Co•Work Capital is designed for founders, consultants, creators and teams who want a premium address, elegant environment and flexible workspace without the setup burden.
+        </p>
 
-          <div class="hero-actions">
-            <button class="btn btn-primary" type="button" data-open-modal="Book a Workspace Tour">Book a Workspace Tour</button>
-            <a class="btn btn-outline" href="#spaces">Explore Spaces</a>
-          </div>
-
-          <div class="trust-pills">
-            <span>Private Cabins</span>
-            <span>Hot Desks</span>
-            <span>Conference Rooms</span>
-            <span>Studio & Events</span>
-          </div>
+        <div class="hero-actions">
+          <button class="btn primary" data-open-form="tour">Book Workspace Tour</button>
+          <button class="btn purple" data-open-form="daypass">Book Quick Day Pass</button>
+          <a class="btn ghost" href="#spaces">Explore Spaces</a>
         </div>
 
-        <div class="hero-stage motion-block">
-          <div class="device-card tilt-card">
-            <img src="https://thecoworkcapital.com/wp-content/uploads/elementor/thumbs/SRP_0396-scaled-q2yoopflhhy0z8n5wbxf6gbzts0h6883nvw3djsh0g.jpg" alt="Premium coworking cabin" loading="eager">
-            <div class="device-glass">
-              <small>Workspace Operating System</small>
-              <h2>Cabins, desks, meetings, studio and events.</h2>
-              <p>Designed for professional focus, better client impressions and flexible growth.</p>
-            </div>
-          </div>
+        <div class="trust-row">
+          <span>Private cabins</span>
+          <span>Day pass</span>
+          <span>Conference room</span>
+          <span>Studio & events</span>
+        </div>
+      </div>
 
-          <div class="float-card float-one">
+      <div class="hero-device reveal" aria-label="Workspace gallery carousel">
+        <div class="device-frame">
+          <img id="heroCarouselImage" src="https://thecoworkcapital.com/wp-content/uploads/elementor/thumbs/SRP_0396-scaled-q2yoopflhhy0z8n5wbxf6gbzts0h6883nvw3djsh0g.jpg" alt="The Co Work Capital workspace">
+          <div class="image-shade"></div>
+
+          <div class="stat-card stat-left">
             <strong>350+</strong>
             <span>Members served</span>
           </div>
 
-          <div class="float-card float-two">
+          <div class="device-caption">
+            <small id="heroCarouselKicker">Workspace Operating System</small>
+            <h2 id="heroCarouselTitle">Cabins, desks, meeting rooms and studio energy.</h2>
+            <p id="heroCarouselCopy">A complete professional atmosphere for serious work, sharp meetings and flexible growth.</p>
+          </div>
+
+          <div class="stat-card stat-right">
             <strong>16k+</strong>
             <span>Sq. ft. managed workspace</span>
           </div>
@@ -97,299 +121,346 @@
       </div>
     </section>
 
-    <section class="marquee-strip" aria-label="Workspace highlights">
-      <div class="marquee-track">
-        <span>Private Cabins</span>
-        <span>Dedicated Desks</span>
-        <span>Hot Desks</span>
-        <span>Conference Rooms</span>
-        <span>Studio Space</span>
-        <span>Event Space</span>
-        <span>Private Cabins</span>
-        <span>Dedicated Desks</span>
-        <span>Hot Desks</span>
-        <span>Conference Rooms</span>
-        <span>Studio Space</span>
-        <span>Event Space</span>
+    <section class="ticker-section" aria-label="Facilities ticker">
+      <div class="ticker-track">
+        <span>Just added: New pool table for founders to pause, reset and network</span>
+        <span>Unlimited tea & coffee</span>
+        <span>Day & night service</span>
+        <span>Table tennis, carrom and chess</span>
+        <span>Conference room and private phone booths</span>
+        <span>Cricket screenings on demand</span>
+        <span>Inside cowork tournaments</span>
+        <span>16000 sq. ft. office empire in Ocean Building</span>
+        <span>Sarabhai Campus, heart of corporate Vadodara</span>
       </div>
     </section>
 
-    <section class="section stats-section">
-      <div class="stats-grid">
-        <div class="stat-card reveal">
-          <strong data-count="350">0</strong>
-          <span>Active members</span>
+    <section class="section intro-experience" id="experience">
+      <div class="experience-image-card reveal">
+        <img src="https://lh3.googleusercontent.com/gps-cs-s/APNQkAF4uERP-DO6Eszhlkq784a8f6YGSBWw6f3LWpNr2Y8oxNVkkOzI8tuQGRBV-2VUcc4cd_BZcxxkBBIA-AiBpXGKeXmKsaGOWvYg41h_vrNoS7WsOFzBXcK2Teqk00QEQWUs2HO1=w1200-h800-k-no" alt="The Co Work Capital reception and interiors">
+        <div>
+          <p class="eyebrow"><span></span> Experience</p>
+          <h2>Not just a seat. A smarter business environment.</h2>
+          <p>Use the address, ambience, community, infrastructure and meeting energy of a professional office while staying light on setup cost and commitments.</p>
+          <button class="btn primary" data-open-form="tour">Experience the Space</button>
         </div>
-        <div class="stat-card reveal">
-          <strong data-count="425">0</strong>
-          <span>Seats managed</span>
+      </div>
+
+      <div class="value-stack">
+        <article class="value-card reveal">
+          <span>01</span>
+          <h3>First impression that feels premium.</h3>
+          <p>A polished workplace for client visits, partner meetings, interviews and serious daily work.</p>
+        </article>
+
+        <article class="value-card reveal">
+          <span>02</span>
+          <h3>Flexible by requirement, not by compromise.</h3>
+          <p>Choose day pass, hot desk, private cabin, meeting room, studio or event space as your business changes.</p>
+        </article>
+
+        <article class="value-card reveal">
+          <span>03</span>
+          <h3>Business comfort without office headache.</h3>
+          <p>WiFi, pantry, lounge, calling zones, conference setup and a focused professional environment.</p>
+        </article>
+
+        <article class="value-card reveal">
+          <span>04</span>
+          <h3>Less setup burden. More momentum.</h3>
+          <p>Avoid furniture, maintenance and operational distraction while keeping a strong business presence.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section amenities-showcase" id="amenities">
+      <div class="section-heading reveal">
+        <p class="eyebrow"><span></span> Facilities with energy</p>
+        <h2>Work hard. Take breaks like entrepreneurs.</h2>
+        <p>Premium work needs premium pauses. The Capital is built for focus, networking, fun and recovery between serious sessions.</p>
+      </div>
+
+      <div class="amenity-stage reveal">
+        <div class="amenity-spotlight">
+          <div class="amenity-number" id="amenityNumber">01</div>
+          <h3 id="amenityTitle">Pool Table Breaks</h3>
+          <p id="amenityCopy">A new pool table facility for entrepreneurs to refresh their mind and start better conversations.</p>
         </div>
-        <div class="stat-card reveal">
-          <strong data-count="16000">0</strong>
-          <span>Sq. ft. workspace</span>
-        </div>
-        <div class="stat-card reveal">
-          <strong data-count="5">0</strong>
-          <span>Years active</span>
+        <div class="amenity-grid">
+          <span>Pool</span>
+          <span>Table Tennis</span>
+          <span>Carrom</span>
+          <span>Chess</span>
+          <span>Cafeteria</span>
+          <span>Unlimited Tea & Coffee</span>
+          <span>Phone Booths</span>
+          <span>Cricket Screenings</span>
+          <span>Private Cabins</span>
+          <span>Flex Desk</span>
+          <span>Conference Room</span>
+          <span>Night Service</span>
         </div>
       </div>
     </section>
 
-    <section class="section purple-panel" id="spaces">
-      <div class="section-head reveal">
-        <p class="eyebrow"><span></span> Spaces</p>
-        <h2>Choose the work mode that matches your ambition.</h2>
-        <p>From a single focused desk to a polished client meeting room, every space is built to feel serious, sharp and flexible.</p>
+    <section class="section" id="spaces">
+      <div class="section-heading split reveal">
+        <div>
+          <p class="eyebrow"><span></span> Spaces</p>
+          <h2>Choose the workspace that fits today.</h2>
+        </div>
+        <p>From a one-day desk to a complete team cabin, every option is designed to reduce setup headache and increase business focus.</p>
       </div>
 
       <div class="spaces-grid">
-        <article class="space-card tilt-card reveal">
-          <img src="https://thecoworkcapital.com/wp-content/uploads/elementor/thumbs/co-work-scaled-p0x1vliejv0a2op8mbf9jwjns7f39c6mab2cn4v8dc.jpg" alt="Hot desk workspace" loading="lazy">
-          <div>
-            <small>Flexible</small>
-            <h3>Hot Desk</h3>
-            <p>Work for a day or use a flexible monthly desk without a fixed seat burden.</p>
-            <button class="btn btn-small" type="button" data-open-modal="Hot Desk">Inquire</button>
+        <article class="space-card reveal tilt">
+          <img src="https://thecoworkcapital.com/wp-content/uploads/elementor/thumbs/co-work-scaled-p0x1vliejv0a2op8mbf9jwjns7f39c6mab2cn4v8dc.jpg" alt="Hot desks at coworking area">
+          <div class="space-content">
+            <small>₹500/day • ₹5,000/month</small>
+            <h3>Hot Desks</h3>
+            <p>Flexible access for founders, freelancers and travelling professionals.</p>
+            <button class="btn purple" data-open-form="daypass">Book Quick Day Pass</button>
           </div>
         </article>
 
-        <article class="space-card tilt-card reveal">
-          <img src="https://lh3.googleusercontent.com/gps-cs-s/APNQkAEWwlTNk3oMK-0NMMjrEPruJjjJefAC8Evb53K_BjFZIsgHAuvINA7atZFXJFW4ok__t1zg4xApkoEm5tHigRYnEeBIeuMEOC6kyhHW_0RqOQY5Jps44xfs7UNlXd3BWS9NQ1mCOA=s1360-w1360-h1020-rw" alt="Dedicated desk" loading="lazy">
-          <div>
-            <small>Regular</small>
-            <h3>Dedicated Desk</h3>
-            <p>Your own desk in a professional environment for steady work rhythm.</p>
-            <button class="btn btn-small" type="button" data-open-modal="Dedicated Desk">Inquire</button>
+        <article class="space-card reveal tilt">
+          <img src="https://lh3.googleusercontent.com/gps-cs-s/APNQkAEWwlTNk3oMK-0NMMjrEPruJjjJefAC8Evb53K_BjFZIsgHAuvINA7atZFXJFW4ok__t1zg4xApkoEm5tHigRYnEeBIeuMEOC6kyhHW_0RqOQY5Jps44xfs7UNlXd3BWS9NQ1mCOA=s1360-w1360-h1020-rw" alt="Dedicated desk workspace">
+          <div class="space-content">
+            <small>From ₹6,000/month</small>
+            <h3>Dedicated Desks</h3>
+            <p>Your fixed desk inside a business-ready coworking atmosphere.</p>
+            <button class="btn primary" data-open-form="dedicated">Check Availability</button>
           </div>
         </article>
 
-        <article class="space-card tilt-card reveal">
-          <img src="https://thecoworkcapital.com/wp-content/uploads/elementor/thumbs/DSC0957-scaled-ormnjtb974r7rb0l60s4ma6iyb7i4dhgfjbyofe49s.jpg" alt="Private cabin" loading="lazy">
-          <div>
-            <small>Private</small>
-            <h3>Private Cabin</h3>
-            <p>A lockable private workspace for founders, consultants and small teams.</p>
-            <button class="btn btn-small" type="button" data-open-modal="Private Cabin">Inquire</button>
+        <article class="space-card reveal tilt">
+          <img src="https://thecoworkcapital.com/wp-content/uploads/elementor/thumbs/DSC0957-scaled-ormnjtb974r7rb0l60s4ma6iyb7i4dhgfjbyofe49s.jpg" alt="Private cabin">
+          <div class="space-content">
+            <small>From ₹21,000/month</small>
+            <h3>Private Cabins</h3>
+            <p>Lockable private workspaces for founders, consultants and small teams.</p>
+            <button class="btn primary" data-open-form="private-cabin">Book Cabin Tour</button>
           </div>
         </article>
 
-        <article class="space-card tilt-card reveal">
-          <img src="https://thecoworkcapital.com/wp-content/uploads/2023/03/SRP_0401-300x200.jpg" alt="Conference room" loading="lazy">
-          <div>
-            <small>Meetings</small>
+        <article class="space-card reveal tilt">
+          <img src="https://thecoworkcapital.com/wp-content/uploads/2023/03/SRP_0401-300x200.jpg" alt="Conference room">
+          <div class="space-content">
+            <small>Hourly booking</small>
             <h3>Conference Room</h3>
-            <p>Host client pitches, interviews and reviews in a professional setting.</p>
-            <button class="btn btn-small" type="button" data-open-modal="Conference Room">Inquire</button>
+            <p>Professional rooms for client meetings, reviews and presentations.</p>
+            <button class="btn primary" data-open-form="conference">Request Room</button>
           </div>
         </article>
-      </div>
-    </section>
 
-    <section class="section experience-grid" id="experience">
-      <div class="story-card reveal">
-        <p class="eyebrow"><span></span> Experience</p>
-        <h2>Not just a seat. A smarter business environment.</h2>
-        <p>
-          Use the address, ambience, community, infrastructure and meeting energy of a professional office while staying light on setup cost and commitments.
-        </p>
-        <button class="btn btn-primary" type="button" data-open-modal="Experience Visit">Experience the Space</button>
-      </div>
-
-      <div class="feature-grid">
-        <div class="feature-card reveal">
-          <b>01</b>
-          <h3>Premium first impression</h3>
-          <p>A space that feels polished when clients, partners or interview candidates visit.</p>
-        </div>
-        <div class="feature-card reveal">
-          <b>02</b>
-          <h3>Flexible by design</h3>
-          <p>Use what you need: day pass, monthly desk, private cabin, meeting room or event space.</p>
-        </div>
-        <div class="feature-card reveal">
-          <b>03</b>
-          <h3>Business-ready comfort</h3>
-          <p>WiFi, pantry, lounge feel, meeting setup and a focused professional environment.</p>
-        </div>
-        <div class="feature-card reveal">
-          <b>04</b>
-          <h3>Less setup burden</h3>
-          <p>Avoid furniture, maintenance and operational headache while keeping a sharp presence.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section purple-panel" id="plans">
-      <div class="section-head reveal">
-        <p class="eyebrow"><span></span> Plans</p>
-        <h2>Simple entry points. Premium work feel.</h2>
-        <p>Start with a visit, day pass or monthly workspace conversation. Final availability and GST details are confirmed by the team.</p>
-      </div>
-
-      <div class="pricing-grid">
-        <article class="price-card reveal">
-          <p>Day Pass</p>
-          <h3>₹500 <small>/ day + GST</small></h3>
-          <ul>
-            <li>Flexible one-day workspace access</li>
-            <li>Great for trials and travelling professionals</li>
-            <li>Upgrade conversation available</li>
-          </ul>
-          <button class="btn btn-outline" type="button" data-open-modal="Day Pass">Ask for Day Pass</button>
+        <article class="space-card reveal tilt">
+          <img src="https://thecoworkcapital.com/wp-content/uploads/elementor/thumbs/8b5fc045-f3d9-411f-b876-5506d038bf9e-oxprzi8lz9md5zirh3esq4g7kjphq4pkzh03umps40.jpg" alt="Event space">
+          <div class="space-content">
+            <small>Workshop / seminar</small>
+            <h3>Event Space</h3>
+            <p>Host workshops, learning sessions and business gatherings.</p>
+            <button class="btn primary" data-open-form="event">Plan an Event</button>
+          </div>
         </article>
 
-        <article class="price-card price-featured reveal">
-          <p>Dedicated Desk</p>
-          <h3>₹6,000 <small>/ month + GST</small></h3>
-          <ul>
-            <li>Fixed work rhythm for regular professionals</li>
-            <li>Premium shared workspace setting</li>
-            <li>Best for founders and focused operators</li>
-          </ul>
-          <button class="btn btn-primary" type="button" data-open-modal="Dedicated Desk">Check Availability</button>
-        </article>
-
-        <article class="price-card reveal">
-          <p>Private Cabin</p>
-          <h3>Custom <small>/ team need</small></h3>
-          <ul>
-            <li>Private lockable workspace</li>
-            <li>Ideal for teams and confidential work</li>
-            <li>Availability confirmed after discussion</li>
-          </ul>
-          <button class="btn btn-outline" type="button" data-open-modal="Private Cabin">Talk to Team</button>
+        <article class="space-card reveal tilt">
+          <img src="https://thecoworkcapital.com/wp-content/uploads/2021/01/02-300x199.jpg" alt="Studio space">
+          <div class="space-content">
+            <small>Studio booking</small>
+            <h3>Studio Space</h3>
+            <p>For shoots, podcast setups, interviews and creative production.</p>
+            <button class="btn primary" data-open-form="studio">Request Studio</button>
+          </div>
         </article>
       </div>
     </section>
 
     <section class="section" id="gallery">
-      <div class="section-head reveal">
-        <p class="eyebrow"><span></span> Gallery</p>
-        <h2>A workspace should look like progress.</h2>
+      <div class="section-heading split reveal">
+        <div>
+          <p class="eyebrow"><span></span> Gallery</p>
+          <h2>A workspace should look like progress.</h2>
+        </div>
         <p>Explore the atmosphere before you visit.</p>
       </div>
 
       <div class="gallery-grid">
-        <figure class="gallery-item reveal">
-          <img src="https://thecoworkcapital.com/wp-content/uploads/elementor/thumbs/SRP_0396-scaled-q2yoopflhhy0z8n5wbxf6gbzts0h6883nvw3djsh0g.jpg" alt="Team cabin" loading="lazy">
-          <figcaption>Team Cabin</figcaption>
+        <figure class="gallery-item large reveal">
+          <img src="https://lh3.googleusercontent.com/gps-cs-s/APNQkAF4uERP-DO6Eszhlkq784a8f6YGSBWw6f3LWpNr2Y8oxNVkkOzI8tuQGRBV-2VUcc4cd_BZcxxkBBIA-AiBpXGKeXmKsaGOWvYg41h_vrNoS7WsOFzBXcK2Teqk00QEQWUs2HO1=w1200-h800-k-no" alt="Team cabin">
+          <figcaption><strong>Team Cabin</strong><span>Designed for teams that want structure and focus.</span></figcaption>
         </figure>
+
         <figure class="gallery-item reveal">
-          <img src="https://thecoworkcapital.com/wp-content/uploads/2023/03/SRP_0401-300x200.jpg" alt="Meeting room" loading="lazy">
-          <figcaption>Meeting Room</figcaption>
+          <img src="https://thecoworkcapital.com/wp-content/uploads/2023/03/SRP_0401-300x200.jpg" alt="Meeting room">
+          <figcaption><strong>Meeting Room</strong><span>Sharp rooms for client-facing conversations.</span></figcaption>
         </figure>
+
         <figure class="gallery-item reveal">
-          <img src="https://thecoworkcapital.com/wp-content/uploads/elementor/thumbs/8b5fc045-f3d9-411f-b876-5506d038bf9e-oxprzi8lz9md5zirh3esq4g7kjphq4pkzh03umps40.jpg" alt="Event space" loading="lazy">
-          <figcaption>Event Space</figcaption>
+          <img src="https://thecoworkcapital.com/wp-content/uploads/elementor/thumbs/8b5fc045-f3d9-411f-b876-5506d038bf9e-oxprzi8lz9md5zirh3esq4g7kjphq4pkzh03umps40.jpg" alt="Event space">
+          <figcaption><strong>Event Space</strong><span>For sessions, workshops and community events.</span></figcaption>
         </figure>
+
         <figure class="gallery-item reveal">
-          <img src="https://thecoworkcapital.com/wp-content/uploads/2021/01/02-300x199.jpg" alt="Studio space" loading="lazy">
-          <figcaption>Studio</figcaption>
+          <img src="https://thecoworkcapital.com/wp-content/uploads/2021/01/02-300x199.jpg" alt="Studio space">
+          <figcaption><strong>Studio</strong><span>Creative production with professional presence.</span></figcaption>
+        </figure>
+
+        <figure class="gallery-item reveal">
+          <img src="https://thecoworkcapital.com/wp-content/uploads/elementor/thumbs/co-work-scaled-p0x1vliejv0a2op8mbf9jwjns7f39c6mab2cn4v8dc.jpg" alt="Coworking lounge and desk area">
+          <figcaption><strong>Work Lounge</strong><span>Flexible desks, calm ambience and serious energy.</span></figcaption>
         </figure>
       </div>
     </section>
 
-    <section class="section contact-section" id="contact">
+    <section class="section social-section">
+      <div class="instagram-card reveal">
+        <div>
+          <p class="eyebrow"><span></span> Social Proof</p>
+          <h2>Follow the workspace energy.</h2>
+          <p>See members, events, interiors, updates and the newest facility moments from The Co•Work Capital.</p>
+        </div>
+        <a class="instagram-button" href="https://www.instagram.com/thecoworkcapital/" target="_blank" rel="noopener">
+          <span>Follow on Instagram</span>
+          <b>@thecoworkcapital</b>
+        </a>
+      </div>
+    </section>
+
+    <section class="section" id="contact">
       <div class="contact-panel reveal">
         <div>
           <p class="eyebrow"><span></span> Visit</p>
           <h2>Ready to see the space?</h2>
-          <p>Share your requirement and the team will help you choose between a day pass, desk, private cabin, conference room or studio/event setup.</p>
+          <p>Share your requirement and the team can help you choose between a day pass, dedicated desk, private cabin, conference room or studio setup.</p>
           <div class="hero-actions">
-            <button class="btn btn-primary" type="button" data-open-modal="Book a Visit">Book Visit</button>
-            <a class="btn btn-outline" href="tel:08320765392">Call Reception</a>
+            <button class="btn primary" data-open-form="tour">Book Visit</button>
+            <button class="btn purple" data-open-form="daypass">Book Quick Day Pass</button>
+            <a class="btn ghost" href="tel:08320765392">Call Reception</a>
           </div>
         </div>
 
         <div class="contact-card">
-          <small>Address</small>
-          <strong>10th Floor, “OCEAN”, Sarabhai Compound, Dr. Vikram Sarabhai Marg, Vadodara, Gujarat - 390023</strong>
-          <small>Phone</small>
-          <strong>083207 65392</strong>
-          <small>Best for</small>
-          <strong>Founders, freelancers, teams, meetings, workshops and studio shoots.</strong>
-          <button class="btn btn-soft full-btn" type="button" data-map-link>Open Google Maps</button>
+          <div>
+            <small>Address</small>
+            <strong>10th Floor, “OCEAN”, Sarabhai Compound, Dr. Vikram Sarabhai Marg, Vadodara, Gujarat - 390023</strong>
+          </div>
+          <div>
+            <small>Call</small>
+            <strong>+91 83207 65392</strong>
+          </div>
+          <div>
+            <small>WhatsApp</small>
+            <strong>Quick enquiry message opens after form submission.</strong>
+          </div>
+          <a class="btn ghost full" href="https://www.google.com/maps/place/THE+CO%E2%80%A2WORK+CAPITAL" target="_blank" rel="noopener">Visit Google Maps</a>
         </div>
       </div>
     </section>
   </main>
 
   <footer>
-    <div class="footer-inner">
-      <span>© <span id="year"></span> The Co•Work Capital.</span>
-      <button class="btn btn-soft" type="button" data-open-modal="Footer Inquiry">Make an Inquiry</button>
-    </div>
+    <span>© <span id="year"></span> The Co•Work Capital</span>
+    <span>Connect • Collaborate • Create</span>
   </footer>
 
-  <div class="modal" id="bookingModal" aria-hidden="true">
-    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <!-- Enquiry Modal -->
+  <section class="form-modal" id="formModal" aria-hidden="true" role="dialog">
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-card" role="document">
+      <button class="modal-close" data-close-modal aria-label="Close enquiry form">×</button>
+
       <div class="modal-head">
-        <div>
-          <p class="modal-kicker">Workspace Concierge</p>
-          <h3 id="modalTitle">Book your workspace visit</h3>
-        </div>
-        <button class="close-btn" type="button" data-close-modal aria-label="Close booking form">×</button>
+        <img src="https://thecoworkcapital.com/wp-content/uploads/2020/02/cropped-New-Logo_BW-1.jpg" alt="The Co Work Capital">
+        <p class="mini-label" id="modalMini">Workspace enquiry</p>
+        <h2 id="modalTitle">Book a Workspace Tour</h2>
+        <p id="modalIntro">Share a few details and the team will guide you.</p>
       </div>
 
-      <form class="form" id="leadForm">
-        <div class="field">
-          <label for="name">Name *</label>
-          <input id="name" name="name" type="text" placeholder="Your full name" required>
+      <form id="enquiryForm" class="enquiry-form" novalidate>
+        <input type="hidden" name="serviceType" id="serviceType" value="standard">
+        <input type="hidden" name="selectedService" id="selectedService" value="Book a Workspace Tour">
+        <input type="hidden" name="ticketId" id="ticketId" value="">
+
+        <label>
+          <span>Name *</span>
+          <input type="text" name="name" id="formName" required minlength="2" autocomplete="name">
+          <small class="field-error"></small>
+        </label>
+
+        <label>
+          <span>Mobile *</span>
+          <div class="phone-field">
+            <b>+91</b>
+            <input type="tel" name="mobile" id="formMobile" maxlength="10" inputmode="numeric" required autocomplete="tel">
+          </div>
+          <small class="field-error"></small>
+        </label>
+
+        <label>
+          <span>Email *</span>
+          <input type="email" name="email" id="formEmail" required autocomplete="email">
+          <small class="field-error"></small>
+        </label>
+
+        <label>
+          <span>Company / Brand</span>
+          <input type="text" name="company" id="formCompany" placeholder="Optional">
+        </label>
+
+        <label>
+          <span>People / Passes *</span>
+          <input type="number" name="people" id="formPeople" min="1" value="1" required>
+        </label>
+
+        <label>
+          <span>Preferred date *</span>
+          <input type="date" name="date" id="formDate" required>
+          <small class="field-error"></small>
+        </label>
+
+        <label>
+          <span>Preferred time</span>
+          <input type="time" name="preferredTime" id="formTime">
+        </label>
+
+        <label class="full">
+          <span>Message</span>
+          <textarea name="note" id="formNote" placeholder="Tell us about your requirement."></textarea>
+        </label>
+
+        <label class="gst-row">
+          <input type="checkbox" name="hasGst" id="hasGst">
+          <span>I need GST invoice details captured</span>
+        </label>
+
+        <div class="gst-fields" id="gstFields">
+          <label>
+            <span>GSTIN</span>
+            <input type="text" name="gstNumber" id="gstNumber" maxlength="15" placeholder="24AAQCP6770K1ZR">
+          </label>
+          <label>
+            <span>GST Firm Name</span>
+            <input type="text" name="gstFirm" id="gstFirm" placeholder="Company name as per GST">
+          </label>
         </div>
 
-        <div class="field">
-          <label for="mobile">Mobile *</label>
-          <input id="mobile" name="mobile" type="tel" placeholder="+91 mobile number" required>
-        </div>
-
-        <div class="field">
-          <label for="email">Email</label>
-          <input id="email" name="email" type="email" placeholder="you@example.com">
-        </div>
-
-        <div class="field">
-          <label for="people">People / Seats</label>
-          <input id="people" name="people" type="number" min="1" placeholder="1">
-        </div>
-
-        <div class="field full">
-          <label for="requirementSelect">Requirement</label>
-          <select id="requirementSelect" name="requirement">
-            <option>Book a Workspace Tour</option>
-            <option>Day Pass</option>
-            <option>Hot Desk</option>
-            <option>Dedicated Desk</option>
-            <option>Private Cabin</option>
-            <option>Conference Room</option>
-            <option>Studio Space</option>
-            <option>Event Space</option>
-            <option>Call Back</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="date">Preferred Date</label>
-          <input id="date" name="date" type="date">
-        </div>
-
-        <div class="field">
-          <label for="company">Company / Brand</label>
-          <input id="company" name="company" type="text" placeholder="Optional">
-        </div>
-
-        <div class="field full">
-          <label for="message">Message</label>
-          <textarea id="message" name="message" placeholder="Tell us your requirement, timing, cabin size, meeting purpose or anything specific."></textarea>
-        </div>
-
-        <div class="success-box" id="successBox"></div>
-
-        <div class="modal-actions">
-          <button class="btn btn-submit" type="submit">Submit Inquiry</button>
-          <button class="btn btn-outline" type="button" data-whatsapp>Send on WhatsApp</button>
-        </div>
+        <button class="btn purple full submit-btn" type="submit">Submit Enquiry</button>
       </form>
+
+      <div class="success-panel" id="successPanel">
+        <div class="success-check">✓</div>
+        <p class="mini-label">Request received</p>
+        <h2 id="successTitle">Your enquiry is created.</h2>
+        <div class="ticket-display" id="ticketDisplay">TCC-0000</div>
+        <p id="successCopy">The team will connect shortly. You can also WhatsApp this enquiry instantly.</p>
+        <div class="success-actions">
+          <button class="btn purple" id="whatsAppBtn">Open WhatsApp Message</button>
+          <a class="btn ghost" href="https://www.google.com/maps/place/THE+CO%E2%80%A2WORK+CAPITAL" target="_blank" rel="noopener">Visit Google Maps</a>
+          <a class="btn ghost" href="tel:08320765392">Call Reception</a>
+          <a class="btn instagram-mini" href="https://www.instagram.com/thecoworkcapital/" target="_blank" rel="noopener">Follow Instagram</a>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
 </body>
 </html>
