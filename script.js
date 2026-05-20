@@ -343,7 +343,7 @@ function showSuccess(payload){
   document.getElementById("successPanel")?.classList.add("show");
   setText("ticketDisplay", payload.ticketId);
   setText("successTitle", `Thank you, ${payload.name.split(" ")[0]}.`);
-  setText("successCopy", `Your ${payload.selectedService} request has been received. Our team will review it and connect with you shortly. A WhatsApp message is ready if you want faster coordination.`);
+  setText("successCopy", `Your ${payload.selectedService} request has been received. Our team will review your requirement and connect with you shortly. You can also use the quick buttons below for faster coordination.`);
 }
 
 function buildWhatsAppMessage(p){
@@ -654,4 +654,116 @@ function setupSolutionCardMotion(){
     card.addEventListener("focus", () => card.classList.add("peek"));
     card.addEventListener("blur", () => card.classList.remove("peek"));
   });
+}
+
+/* ======================================================
+   Premium Motion Pack JS
+====================================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+  setupHeaderShrink();
+  setupMagneticButtons();
+  setupHeroTextReveal();
+  setupPremiumCardGlow();
+});
+
+/* 1. Header shrink on scroll */
+function setupHeaderShrink() {
+  const header = document.querySelector(".site-header");
+  if (!header) return;
+
+  function updateHeader() {
+    if (window.scrollY > 40) {
+      header.classList.add("is-scrolled");
+    } else {
+      header.classList.remove("is-scrolled");
+    }
+  }
+
+  updateHeader();
+  window.addEventListener("scroll", updateHeader, { passive: true });
+}
+
+/* 2. Magnetic buttons */
+function setupMagneticButtons() {
+  const buttons = document.querySelectorAll(".btn");
+
+  buttons.forEach((btn) => {
+    btn.addEventListener("mousemove", (e) => {
+      if (window.matchMedia("(pointer: coarse)").matches) return;
+
+      const rect = btn.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+
+      btn.classList.add("magnetic-active");
+      btn.style.transform = `translate(${x * 0.12}px, ${y * 0.18}px) scale(1.025)`;
+    });
+
+    btn.addEventListener("mouseleave", () => {
+      btn.classList.remove("magnetic-active");
+      btn.style.transform = "";
+    });
+  });
+}
+
+/* 3. Hero text reveal */
+function setupHeroTextReveal() {
+  const heading = document.querySelector(".hero h1");
+  if (!heading || heading.dataset.revealed === "true") return;
+
+  const originalText = heading.textContent.trim();
+  const words = originalText.split(" ");
+
+  heading.innerHTML = words
+    .map((word, index) => {
+      return `<span class="hero-word" style="animation-delay:${index * 0.065}s">${word}&nbsp;</span>`;
+    })
+    .join("");
+
+  heading.dataset.revealed = "true";
+}
+
+/* 4. Card glow follows cursor */
+function setupPremiumCardGlow() {
+  const glowItems = document.querySelectorAll(
+    ".solution-card, .value-card, .hero-proof article, .amenity-grid span"
+  );
+
+  glowItems.forEach((item) => {
+    item.addEventListener("mousemove", (e) => {
+      const rect = item.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      item.style.setProperty("--glow-x", `${x}px`);
+      item.style.setProperty("--glow-y", `${y}px`);
+    });
+  });
+}
+
+/* Royal welcome voice after entry form */
+function playRoyalWelcomeVoice() {
+  if (!("speechSynthesis" in window)) return;
+
+  const text = "Welcome to The Co Work Capital";
+  const utterance = new SpeechSynthesisUtterance(text);
+
+  const voices = window.speechSynthesis.getVoices();
+
+  const indianFemaleVoice =
+    voices.find(v => v.lang === "en-IN" && /female|woman|zira|heera|priya|swara|neerja/i.test(v.name)) ||
+    voices.find(v => v.lang === "en-IN") ||
+    voices.find(v => /india|indian|hindi/i.test(v.name)) ||
+    voices.find(v => v.lang && v.lang.startsWith("en"));
+
+  if (indianFemaleVoice) utterance.voice = indianFemaleVoice;
+
+  utterance.lang = "en-IN";
+  utterance.rate = 0.82;
+  utterance.pitch = 1.05;
+  utterance.volume = 0.95;
+
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utterance);
 }
