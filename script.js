@@ -76,6 +76,8 @@ document.addEventListener("DOMContentLoaded", () => {
   setupVisitFaq();
   setupTilt();
   setupMobileMasks();
+  setTimeout(syncPageLock, 500);
+  setTimeout(syncPageLock, 2000);
   logEvent("page_loaded", "Website opened");
 });
 
@@ -89,27 +91,33 @@ function setupYear(){
 function setupLeadGate(){
   const gate = document.getElementById("leadGate");
   const form = document.getElementById("welcomeForm");
-  if(!gate || !form) return;
-
-  const saved = safeParse(localStorage.getItem("tcc_user_session"));
-const savedAt = Number(localStorage.getItem("tcc_user_session_time") || 0);
-const fiveMinutes = 5 * 60 * 1000;
-const stillFresh = savedAt && Date.now() - savedAt < fiveMinutes;
-
-  if(saved && saved.name && saved.mobile && saved.email && stillFresh){
-    state.user = saved;
-    gate.classList.add("hide");
-    document.body.classList.remove("no-scroll");
-    prefillModalUser();
-  } else {
-    document.body.classList.add("no-scroll");
-    setTimeout(() => document.getElementById("welcomeName")?.focus(), 500);
+  if(!gate || !form) {
+    unlockPage();
+    return;
   }
 
-  form.addEventListener("submit", async (e) => {
+  const saved = safeParse(localStorage.getItem("tcc_user_session"));
+  const savedAt = Number(localStorage.getItem("tcc_user_session_time") || 0);
+  const fiveMinutes = 5 * 60 * 1000;
+  const stillFresh = savedAt && Date.now() - savedAt < fiveMinutes;
+
+  if(saved && saved.name && saved.mobile && saved.email && stillFresh){
+    state.user = {
+      name: cleanName(saved.name),
+      mobile: onlyDigits(saved.mobile).slice(-10),
+      email: cleanEmail(saved.email)
+    };
+    hideLeadGate();
+    prefillModalUser();
+  } else {
+    showLeadGate();
+    setTimeout(() => document.getElementById("welcomeName")?.focus(), 450);
+  }
+
+  form.addEventListener("submit", (e) => {
     e.preventDefault();
     const name = cleanName(document.getElementById("welcomeName").value);
-    const mobile = onlyDigits(document.getElementById("welcomeMobile").value);
+    const mobile = onlyDigits(document.getElementById("welcomeMobile").value).slice(-10);
     const email = cleanEmail(document.getElementById("welcomeEmail").value);
 
     clearErrors(form);
@@ -121,12 +129,15 @@ const stillFresh = savedAt && Date.now() - savedAt < fiveMinutes;
 
     state.user = { name, mobile, email };
     localStorage.setItem("tcc_user_session", JSON.stringify(state.user));
-localStorage.setItem("tcc_user_session_time", String(Date.now()));
-sessionStorage.setItem("tcc_user_session", JSON.stringify(state.user));
+    localStorage.setItem("tcc_user_session_time", String(Date.now()));
+    sessionStorage.setItem("tcc_user_session", JSON.stringify(state.user));
     prefillModalUser();
     logEvent("entry_details_submitted", "First 3 details captured");
 
-    await apiCall("logEarlyLead", {
+    // Important: unlock the homepage immediately. The visitor should never wait for the connection.
+    hideLeadGate();
+
+    apiCall("logEarlyLead", {
       sessionId: state.sessionId,
       name,
       mobile: "+91" + mobile,
@@ -135,10 +146,40 @@ sessionStorage.setItem("tcc_user_session", JSON.stringify(state.user));
       userAgent: navigator.userAgent,
       screenSize: `${window.innerWidth}x${window.innerHeight}`
     });
-
-    gate.classList.add("hide");
-    document.body.classList.remove("no-scroll");
   });
+}
+
+function showLeadGate(){
+  const gate = document.getElementById("leadGate");
+  if(gate) gate.classList.remove("hide");
+  lockPage();
+}
+
+function hideLeadGate(){
+  const gate = document.getElementById("leadGate");
+  if(gate) {
+    gate.classList.add("hide");
+    gate.setAttribute("aria-hidden", "true");
+  }
+  unlockPage();
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+
+function lockPage(){
+  document.body.classList.add("no-scroll");
+}
+
+function unlockPage(){
+  document.body.classList.remove("no-scroll");
+  document.documentElement.style.overflowY = "auto";
+  document.body.style.overflowY = "auto";
+}
+
+function syncPageLock(){
+  const gateVisible = document.getElementById("leadGate") && !document.getElementById("leadGate").classList.contains("hide");
+  const modalVisible = document.getElementById("enquiryModal")?.classList.contains("show");
+  if(gateVisible || modalVisible) lockPage();
+  else unlockPage();
 }
 
 function setupButtons(){
@@ -207,7 +248,7 @@ function openEnquiry(type = "tour"){
   document.getElementById("enquiryForm")?.classList.remove("hide");
 
   document.getElementById("enquiryModal")?.classList.add("show");
-  document.body.classList.add("no-scroll");
+  lockPage();
   logEvent("form_opened", config.selectedService);
 }
 
@@ -224,7 +265,7 @@ function resetEnquiryFormByService(config){
 
 function closeEnquiry(){
   document.getElementById("enquiryModal")?.classList.remove("show");
-  document.body.classList.remove("no-scroll");
+  syncPageLock();
 }
 
 async function handleEnquirySubmit(e){
@@ -488,16 +529,23 @@ function prefillModalUser(){
 }
 
 async function apiCall(action, data = {}){
+  if(!API_URL) return false;
+  const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+  const timeout = controller ? setTimeout(() => controller.abort(), 4500) : null;
   try{
     await fetch(API_URL, {
       method: "POST",
       mode: "no-cors",
-      body: JSON.stringify({ action, data })
+      body: JSON.stringify({ action, data }),
+      signal: controller ? controller.signal : undefined,
+      keepalive: JSON.stringify({ action, data }).length < 60000
     });
     return true;
   }catch(err){
-    console.warn("Request could not be completed", action, err);
+    console.warn("Connection note", action, err && err.message ? err.message : err);
     return false;
+  }finally{
+    if(timeout) clearTimeout(timeout);
   }
 }
 
