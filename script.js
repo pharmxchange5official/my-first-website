@@ -91,6 +91,11 @@ function setupYear(){
 function setupLeadGate(){
   const gate = document.getElementById("leadGate");
   const form = document.getElementById("welcomeForm");
+  if(isMobileExperience()){
+    if(gate) gate.classList.add("hide");
+    unlockPage();
+    return;
+  }
   if(!gate || !form) {
     unlockPage();
     return;
@@ -136,6 +141,7 @@ function setupLeadGate(){
 
     // Important: unlock the homepage immediately. The visitor should never wait for the connection.
     hideLeadGate();
+    playRoyalWelcomeVoice();
 
     apiCall("logEarlyLead", {
       sessionId: state.sessionId,
@@ -343,7 +349,7 @@ function showSuccess(payload){
   document.getElementById("successPanel")?.classList.add("show");
   setText("ticketDisplay", payload.ticketId);
   setText("successTitle", `Thank you, ${payload.name.split(" ")[0]}.`);
-  setText("successCopy", `Your ${payload.selectedService} request has been received. Our team will review your requirement and connect with you shortly. You can also use the quick buttons below for faster coordination.`);
+  setText("successCopy", `Your ${payload.selectedService} request has been received. Our team will review it and connect with you shortly. A WhatsApp message is ready if you want faster coordination.`);
 }
 
 function buildWhatsAppMessage(p){
@@ -742,28 +748,263 @@ function setupPremiumCardGlow() {
   });
 }
 
-/* Royal welcome voice after entry form */
+/* Royal welcome voice after entry form
+   Plays only after user submits first 3 details and clicks Enter Work Space.
+   Browser voice availability depends on device/Chrome/Windows voices.
+*/
 function playRoyalWelcomeVoice() {
-  if (!("speechSynthesis" in window)) return;
+  if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") return;
 
-  const text = "Welcome to The Co Work Capital";
-  const utterance = new SpeechSynthesisUtterance(text);
+  const speak = () => {
+    const voices = window.speechSynthesis.getVoices() || [];
+
+    const preferredVoice =
+      voices.find(v => v.lang === "en-IN" && /female|woman|zira|heera|priya|swara|neerja|google/i.test(v.name)) ||
+      voices.find(v => v.lang === "en-IN") ||
+      voices.find(v => /india|indian|hindi|heera|priya|swara|neerja/i.test(v.name)) ||
+      voices.find(v => v.lang && v.lang.toLowerCase().startsWith("en"));
+
+    const utterance = new SpeechSynthesisUtterance("Welcome to The Co Work Capital");
+
+    if (preferredVoice) utterance.voice = preferredVoice;
+
+    utterance.lang = "en-IN";
+    utterance.rate = 0.82;
+    utterance.pitch = 1.08;
+    utterance.volume = 0.95;
+
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
+  };
 
   const voices = window.speechSynthesis.getVoices();
+  if (voices && voices.length) {
+    speak();
+  } else {
+    window.speechSynthesis.onvoiceschanged = () => {
+      speak();
+      window.speechSynthesis.onvoiceschanged = null;
+    };
+    setTimeout(speak, 350);
+  }
+}
 
-  const indianFemaleVoice =
-    voices.find(v => v.lang === "en-IN" && /female|woman|zira|heera|priya|swara|neerja/i.test(v.name)) ||
-    voices.find(v => v.lang === "en-IN") ||
-    voices.find(v => /india|indian|hindi/i.test(v.name)) ||
-    voices.find(v => v.lang && v.lang.startsWith("en"));
+/* ======================================================
+   Mobile App Experience JS — phone only
+   Keeps desktop website unchanged.
+====================================================== */
+document.addEventListener("DOMContentLoaded", () => {
+  setupMobileAppExperience();
+});
 
-  if (indianFemaleVoice) utterance.voice = indianFemaleVoice;
+function isMobileExperience(){
+  return window.matchMedia && window.matchMedia("(max-width: 768px)").matches;
+}
 
-  utterance.lang = "en-IN";
-  utterance.rate = 0.82;
-  utterance.pitch = 1.05;
-  utterance.volume = 0.95;
+const mobileState = {
+  currentView: "mIntro",
+  history: ["mIntro"],
+  serviceKey: "tour",
+  ticketId: "",
+  whatsAppMessage: ""
+};
 
-  window.speechSynthesis.cancel();
-  window.speechSynthesis.speak(utterance);
+function setupMobileAppExperience(){
+  if(!isMobileExperience()) return;
+  const app = document.getElementById("mobileApp");
+  if(!app) return;
+  unlockPage();
+
+  const saved = safeParse(localStorage.getItem("tcc_user_session"));
+  const savedAt = Number(localStorage.getItem("tcc_user_session_time") || 0);
+  const fresh = savedAt && Date.now() - savedAt < 5 * 60 * 1000;
+  if(saved && saved.name && saved.mobile && saved.email && fresh){
+    state.user = { name: cleanName(saved.name), mobile: onlyDigits(saved.mobile).slice(-10), email: cleanEmail(saved.email) };
+    setText("mWelcomeTitle", `Welcome, ${state.user.name.split(" ")[0]}.`);
+    mShowView("mHome", false);
+  } else {
+    mShowView("mIntro", false);
+  }
+
+  document.querySelectorAll("[data-m-go]").forEach(el => {
+    el.addEventListener("click", () => mShowView(el.dataset.mGo));
+  });
+  document.querySelectorAll("[data-mobile-form]").forEach(el => {
+    el.addEventListener("click", () => mOpenForm(el.dataset.mobileForm));
+  });
+
+  document.getElementById("mBackBtn")?.addEventListener("click", mGoBack);
+  document.getElementById("mEntryForm")?.addEventListener("submit", mSubmitEntry);
+  document.getElementById("mEnquiryForm")?.addEventListener("submit", mSubmitEnquiry);
+  document.getElementById("mWhatsAppBtn")?.addEventListener("click", () => {
+    if(mobileState.whatsAppMessage){
+      window.open("https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(mobileState.whatsAppMessage), "_blank");
+    }
+  });
+  ["mMobile","mLeadMobile"].forEach(id => {
+    document.getElementById(id)?.addEventListener("input", e => e.target.value = onlyDigits(e.target.value).slice(0,10));
+  });
+}
+
+function mShowView(id, push = true){
+  if(!document.getElementById(id)) return;
+  document.querySelectorAll(".m-view").forEach(v => v.classList.remove("m-view-active"));
+  document.getElementById(id).classList.add("m-view-active");
+  if(push && mobileState.currentView !== id){
+    mobileState.history.push(id);
+  }
+  mobileState.currentView = id;
+  mUpdateHeader();
+}
+
+function mGoBack(){
+  if(mobileState.history.length <= 1) return;
+  mobileState.history.pop();
+  const previous = mobileState.history[mobileState.history.length - 1] || "mHome";
+  mShowView(previous, false);
+}
+
+function mUpdateHeader(){
+  const back = document.getElementById("mBackBtn");
+  const progress = document.getElementById("mProgressBar");
+  if(back) back.classList.toggle("show", !["mIntro","mHome","mSuccess"].includes(mobileState.currentView));
+  const map = { mIntro: 8, mEntry: 22, mHome: 42, mServices: 58, mForm: 78, mSuccess: 100 };
+  if(progress) progress.style.width = (map[mobileState.currentView] || 12) + "%";
+}
+
+function mClearErrors(form){
+  form?.querySelectorAll("small").forEach(s => s.textContent = "");
+}
+
+function mSetError(inputId, message){
+  const input = document.getElementById(inputId);
+  const label = input?.closest("label");
+  const small = label?.querySelector("small");
+  if(small) small.textContent = message;
+}
+
+function mSubmitEntry(e){
+  e.preventDefault();
+  const form = e.currentTarget;
+  mClearErrors(form);
+  const name = cleanName(document.getElementById("mName").value);
+  const mobile = onlyDigits(document.getElementById("mMobile").value).slice(-10);
+  const email = cleanEmail(document.getElementById("mEmail").value);
+  let ok = true;
+  if(name.length < 2){ mSetError("mName", "Please enter your full name."); ok = false; }
+  if(!isValidIndianMobile(mobile)){ mSetError("mMobile", "Enter a valid 10 digit mobile number."); ok = false; }
+  if(!isValidEmail(email)){ mSetError("mEmail", "Enter a valid email address."); ok = false; }
+  if(!ok){ state.validationErrors++; return; }
+
+  state.user = { name, mobile, email };
+  localStorage.setItem("tcc_user_session", JSON.stringify(state.user));
+  localStorage.setItem("tcc_user_session_time", String(Date.now()));
+  sessionStorage.setItem("tcc_user_session", JSON.stringify(state.user));
+  setText("mWelcomeTitle", `Welcome, ${name.split(" ")[0]}.`);
+  playRoyalWelcomeVoice();
+  mShowView("mHome");
+
+  apiCall("logEarlyLead", {
+    sessionId: state.sessionId,
+    name,
+    mobile: "+91" + mobile,
+    email,
+    sourcePath: location.href + "#mobile-app",
+    userAgent: navigator.userAgent,
+    screenSize: `${window.innerWidth}x${window.innerHeight}`
+  });
+}
+
+function mOpenForm(type = "tour"){
+  if(!state.user.name || !state.user.mobile || !state.user.email){
+    mShowView("mEntry");
+    return;
+  }
+  mobileState.serviceKey = serviceMap[type] ? type : "tour";
+  const config = serviceMap[mobileState.serviceKey];
+  mobileState.ticketId = generateTicketId(config.serviceType);
+  setText("mFormMini", config.mini);
+  setText("mFormTitle", config.title);
+  setText("mFormIntro", config.intro);
+  setVal("mLeadName", state.user.name || "");
+  setVal("mLeadMobile", state.user.mobile || "");
+  setVal("mLeadEmail", state.user.email || "");
+  setVal("mCompany", "");
+  setVal("mPeople", config.serviceType === "conference" ? "4" : "1");
+  setVal("mTime", "");
+  setVal("mMessage", "");
+  const date = document.getElementById("mDate");
+  if(date){
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    date.min = new Date().toISOString().slice(0,10);
+    date.value = tomorrow.toISOString().slice(0,10);
+  }
+  const submit = document.getElementById("mSubmitBtn");
+  if(submit) submit.textContent = config.submit || "Submit Enquiry";
+  mClearErrors(document.getElementById("mEnquiryForm"));
+  mShowView("mForm");
+  state.formStarted = true;
+  logEvent("mobile_form_opened", config.selectedService);
+}
+
+async function mSubmitEnquiry(e){
+  e.preventDefault();
+  const form = e.currentTarget;
+  mClearErrors(form);
+  const name = cleanName(val("mLeadName"));
+  const mobile = onlyDigits(val("mLeadMobile")).slice(-10);
+  const email = cleanEmail(val("mLeadEmail"));
+  const date = val("mDate");
+  let ok = true;
+  if(name.length < 2){ mSetError("mLeadName", "Please enter your name."); ok = false; }
+  if(!isValidIndianMobile(mobile)){ mSetError("mLeadMobile", "Enter a valid 10 digit mobile number."); ok = false; }
+  if(!isValidEmail(email)){ mSetError("mLeadEmail", "Enter a valid email."); ok = false; }
+  if(!date){ mSetError("mDate", "Please choose a date."); ok = false; }
+  if(!ok){ state.validationErrors++; return; }
+
+  state.user = { name, mobile, email };
+  localStorage.setItem("tcc_user_session", JSON.stringify(state.user));
+  localStorage.setItem("tcc_user_session_time", String(Date.now()));
+  sessionStorage.setItem("tcc_user_session", JSON.stringify(state.user));
+
+  const config = serviceMap[mobileState.serviceKey] || serviceMap.tour;
+  const payload = {
+    sessionId: state.sessionId,
+    ticketId: mobileState.ticketId || generateTicketId(config.serviceType),
+    name,
+    mobile: "+91" + mobile,
+    email,
+    company: val("mCompany"),
+    selectedService: config.selectedService,
+    serviceType: config.serviceType,
+    priceDisplay: priceForService(config.serviceType, config.selectedService),
+    people: val("mPeople") || "1",
+    city: "Vadodara",
+    date,
+    preferredTime: val("mTime"),
+    purpose: config.selectedService,
+    note: val("mMessage"),
+    hasGst: "No",
+    sourcePath: location.href + "#mobile-app",
+    referrer: document.referrer,
+    userAgent: navigator.userAgent,
+    screenSize: `${window.innerWidth}x${window.innerHeight}`,
+    eventStream: JSON.stringify(state.eventStream.slice(-25))
+  };
+  const btn = document.getElementById("mSubmitBtn");
+  const old = btn ? btn.textContent : "";
+  if(btn){ btn.disabled = true; btn.textContent = "Submitting..."; }
+  const action = config.serviceType === "conference" ? "submitConference" : "submitInquiry";
+  await apiCall(action, payload);
+  if(btn){ btn.disabled = false; btn.textContent = old; }
+  state.converted = true;
+  mobileState.ticketId = payload.ticketId;
+  mobileState.whatsAppMessage = buildWhatsAppMessage(payload);
+  setText("mTicketDisplay", payload.ticketId);
+  setText("mSuccessTitle", `Thank you, ${name.split(" ")[0]}.`);
+  setText("mSuccessCopy", `Your ${payload.selectedService} request has been received. Our team will review it and connect with you shortly.`);
+  logEvent("mobile_form_submitted", payload.ticketId);
+  logSession("mobile_converted");
+  mShowView("mSuccess");
 }

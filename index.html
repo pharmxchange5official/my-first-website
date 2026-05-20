@@ -159,6 +159,13 @@
       </div>
     </section>
 
+    <section class="offer-banner" aria-label="Day pass offer">
+      <div>
+        <strong>First Day Pass?</strong>
+        <span>Get a guided workspace tour with your visit and explore desks, cabins, meeting rooms and amenities before choosing your best fit.</span>
+      </div>
+      <button class="btn purple" type="button" data-open-form="daypass">Book Quick Day Pass</button>
+
     <section class="ticker-section" aria-label="Facilities ticker">
       <div class="ticker-track">
         <span>Just added: a new pool table for entrepreneurs to pause, reset and network</span>
@@ -487,6 +494,125 @@
       </div>
     </div>
   </section>
+
+
+  <!-- MOBILE APP EXPERIENCE: visible only on phones -->
+  <section class="mobile-app" id="mobileApp" aria-label="The Co Work Capital mobile app experience">
+    <div class="m-shell">
+      <div class="m-progress"><span id="mProgressBar"></span></div>
+      <header class="m-header">
+        <button class="m-back" id="mBackBtn" type="button" aria-label="Go back">←</button>
+        <img src="logo-coworkcapital.png" alt="The Co Work Capital" onerror="this.src='https://thecoworkcapital.com/wp-content/uploads/2020/02/cropped-New-Logo_BW-1.jpg'">
+        <a class="m-call" href="tel:08320765392" aria-label="Call reception">Call</a>
+      </header>
+
+      <main class="m-view m-view-active" id="mIntro">
+        <div class="m-intro-glow"></div>
+        <img class="m-intro-logo" src="logo-coworkcapital.png" alt="The Co Work Capital" onerror="this.src='https://thecoworkcapital.com/wp-content/uploads/2020/02/cropped-New-Logo_BW-1.jpg'">
+        <p class="m-eyebrow">Premium workspace • Vadodara</p>
+        <h1>Connect.<br>Collaborate.<br>Create.</h1>
+        <p class="m-sub">A mobile-first workspace concierge for day pass, desks, cabins and meeting rooms.</p>
+        <button class="m-btn m-btn-purple" type="button" data-m-go="mEntry">Enter Work Space</button>
+        <a class="m-soft-link" href="tel:08320765392">Prefer calling reception?</a>
+      </main>
+
+      <main class="m-view" id="mEntry">
+        <p class="m-eyebrow">Before we begin</p>
+        <h2>Share your details once.</h2>
+        <p class="m-copy">Your next forms will stay pre-filled so you can enquire faster.</p>
+        <form class="m-form" id="mEntryForm" novalidate>
+          <label><span>Full Name</span><input id="mName" type="text" autocomplete="name" placeholder="Your full name" required><small></small></label>
+          <label><span>Mobile Number</span><div class="m-phone"><b>+91</b><input id="mMobile" type="tel" inputmode="numeric" maxlength="10" placeholder="10 digit mobile" required></div><small></small></label>
+          <label><span>Email Address</span><input id="mEmail" type="email" autocomplete="email" placeholder="you@company.com" required><small></small></label>
+          <button class="m-btn m-btn-purple" type="submit">Enter Work Space</button>
+        </form>
+        <p class="m-note">Used only for workspace assistance, visit guidance and service communication.</p>
+      </main>
+
+      <main class="m-view" id="mHome">
+        <div class="m-hero-card">
+          <img src="https://lh3.googleusercontent.com/gps-cs-s/APNQkAF4uERP-DO6Eszhlkq784a8f6YGSBWw6f3LWpNr2Y8oxNVkkOzI8tuQGRBV-2VUcc4cd_BZcxxkBBIA-AiBpXGKeXmKsaGOWvYg41h_vrNoS7WsOFzBXcK2Teqk00QEQWUs2HO1=w1200-h800-k-no" alt="The Co Work Capital reception">
+          <div><span>Ocean Building • Sarabhai Campus</span><strong>Find your workspace in minutes.</strong></div>
+        </div>
+        <h2 id="mWelcomeTitle">Welcome.</h2>
+        <p class="m-copy">Choose what you need today. Our team will guide you toward the right option.</p>
+
+        <div class="m-quick-grid">
+          <button type="button" class="m-quick m-purple-1" data-mobile-form="daypass">Book Desk for 1 Day</button>
+          <button type="button" class="m-quick m-purple-2" data-mobile-form="tour">Book Workspace Tour</button>
+          <button type="button" class="m-quick m-purple-3" data-mobile-form="conference">Conference Room</button>
+          <a class="m-quick m-purple-4" href="tel:08320765392">Call Reception</a>
+        </div>
+
+        <div class="m-stats">
+          <article><strong>350+</strong><span>Members</span></article>
+          <article><strong>16k+</strong><span>Sq. ft.</span></article>
+          <article><strong>5+</strong><span>Years</span></article>
+          <article><strong>425+</strong><span>Seats</span></article>
+        </div>
+
+        <div class="m-section-title"><span>Popular options</span><button type="button" data-m-go="mServices">View all</button></div>
+        <div class="m-card-stack">
+          <article class="m-service-card" data-mobile-form="daypass"><img src="https://thecoworkcapital.com/wp-content/uploads/elementor/thumbs/co-work-scaled-p0x1vliejv0a2op8mbf9jwjns7f39c6mab2cn4v8dc.jpg" alt="Day pass"><div><small>ON-DEMAND</small><h3>Quick Day Pass</h3><p>Work for a day and explore the space.</p></div></article>
+          <article class="m-service-card" data-mobile-form="private-cabin"><img src="https://thecoworkcapital.com/wp-content/uploads/elementor/thumbs/DSC0957-scaled-ormnjtb974r7rb0l60s4ma6iyb7i4dhgfjbyofe49s.jpg" alt="Private cabin"><div><small>TEAMS</small><h3>Private Cabin</h3><p>Privacy, presence and focus for your team.</p></div></article>
+        </div>
+      </main>
+
+      <main class="m-view" id="mServices">
+        <p class="m-eyebrow">Workspace options</p>
+        <h2>Choose your requirement.</h2>
+        <div class="m-card-stack m-all-services">
+          <article class="m-service-card" data-mobile-form="daypass"><img src="https://thecoworkcapital.com/wp-content/uploads/elementor/thumbs/co-work-scaled-p0x1vliejv0a2op8mbf9jwjns7f39c6mab2cn4v8dc.jpg" alt="Day pass"><div><small>₹500/day + GST</small><h3>Quick Day Pass</h3><p>For freelancers, founders and travelling professionals.</p></div></article>
+          <article class="m-service-card" data-mobile-form="dedicated"><img src="https://lh3.googleusercontent.com/gps-cs-s/APNQkAEWwlTNk3oMK-0NMMjrEPruJjjJefAC8Evb53K_BjFZIsgHAuvINA7atZFXJFW4ok__t1zg4xApkoEm5tHigRYnEeBIeuMEOC6kyhHW_0RqOQY5Jps44xfs7UNlXd3BWS9NQ1mCOA=s1360-w1360-h1020-rw" alt="Dedicated desk"><div><small>From ₹6,000/mo.</small><h3>Dedicated Desk</h3><p>Your fixed desk in a premium coworking setup.</p></div></article>
+          <article class="m-service-card" data-mobile-form="private-cabin"><img src="https://thecoworkcapital.com/wp-content/uploads/elementor/thumbs/DSC0957-scaled-ormnjtb974r7rb0l60s4ma6iyb7i4dhgfjbyofe49s.jpg" alt="Private cabin"><div><small>Custom options</small><h3>Private Cabin</h3><p>Lockable space for founders and teams.</p></div></article>
+          <article class="m-service-card" data-mobile-form="conference"><img src="https://thecoworkcapital.com/wp-content/uploads/2023/03/SRP_0401-300x200.jpg" alt="Conference room"><div><small>Hourly booking</small><h3>Conference Room</h3><p>For meetings, interviews and presentations.</p></div></article>
+          <article class="m-service-card" data-mobile-form="event"><img src="https://thecoworkcapital.com/wp-content/uploads/elementor/thumbs/8b5fc045-f3d9-411f-b876-5506d038bf9e-oxprzi8lz9md5zirh3esq4g7kjphq4pkzh03umps40.jpg" alt="Event space"><div><small>Setup support</small><h3>Workshop Space</h3><p>Seminars, networking and learning sessions.</p></div></article>
+          <article class="m-service-card" data-mobile-form="studio"><img src="https://thecoworkcapital.com/wp-content/uploads/2021/01/02-300x199.jpg" alt="Studio space"><div><small>By requirement</small><h3>Studio Space</h3><p>For podcasts, interviews and content shoots.</p></div></article>
+        </div>
+      </main>
+
+      <main class="m-view" id="mForm">
+        <p class="m-eyebrow" id="mFormMini">Workspace enquiry</p>
+        <h2 id="mFormTitle">Book a Workspace Tour</h2>
+        <p class="m-copy" id="mFormIntro">Share your requirement and our team will connect with you.</p>
+        <form class="m-form" id="mEnquiryForm" novalidate>
+          <label><span>Name</span><input id="mLeadName" type="text" required><small></small></label>
+          <label><span>Mobile</span><div class="m-phone"><b>+91</b><input id="mLeadMobile" type="tel" inputmode="numeric" maxlength="10" required></div><small></small></label>
+          <label><span>Email</span><input id="mLeadEmail" type="email" required><small></small></label>
+          <label><span>Company / Brand</span><input id="mCompany" type="text" placeholder="Optional"></label>
+          <div class="m-form-row">
+            <label><span>People</span><input id="mPeople" type="number" min="1" value="1"></label>
+            <label><span>Date</span><input id="mDate" type="date" required><small></small></label>
+          </div>
+          <label><span>Preferred Time</span><input id="mTime" type="time"></label>
+          <label><span>Message</span><textarea id="mMessage" placeholder="Tell us what you need"></textarea></label>
+          <button class="m-btn m-btn-purple" id="mSubmitBtn" type="submit">Submit Enquiry</button>
+        </form>
+      </main>
+
+      <main class="m-view" id="mSuccess">
+        <div class="m-success-mark">✓</div>
+        <p class="m-eyebrow">Request received</p>
+        <h2 id="mSuccessTitle">Thank you.</h2>
+        <div class="m-ticket" id="mTicketDisplay">TCC-0000</div>
+        <p class="m-copy" id="mSuccessCopy">Our team will review your requirement and connect with you shortly.</p>
+        <div class="m-success-actions">
+          <button class="m-btn m-btn-purple" id="mWhatsAppBtn" type="button">Send on WhatsApp</button>
+          <a class="m-btn m-btn-dark" href="tel:08320765392">Call Reception</a>
+          <a class="m-btn m-btn-light" href="https://www.google.com/maps/place/THE+CO%E2%80%A2WORK+CAPITAL" target="_blank" rel="noopener">Open Maps</a>
+          <a class="m-btn m-btn-light" href="https://www.instagram.com/thecoworkcapital/" target="_blank" rel="noopener">Instagram</a>
+        </div>
+      </main>
+
+      <nav class="m-bottom-nav">
+        <button type="button" data-m-go="mHome">Home</button>
+        <button type="button" data-m-go="mServices">Spaces</button>
+        <button type="button" data-mobile-form="daypass">Day Pass</button>
+        <a href="https://wa.me/918320765392?text=Hello%20The%20Co%20Work%20Capital%2C%20I%20want%20help%20with%20workspace%20options." target="_blank" rel="noopener">WhatsApp</a>
+      </nav>
+    </div>
+  </section>
+
   <div class="mobile-bottom-cta" aria-label="Quick mobile actions">
     <a href="tel:08320765392">Call Now</a>
     <button type="button" data-open-form="daypass">Book Day Pass</button>
